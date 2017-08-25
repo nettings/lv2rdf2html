@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <!--
-  lv2rdf2html.xsl v. 0.2.0
+  lv2rdf2html.xsl
   written 2017 by Jörn Nettingsmeier. This transform is in the public domain.
   
   Converts LV2 plugin documentation in RDF/XML format to a simple form-based 
-  HTML5/jquery-ui GUI. This is meant to control plugins running in mod-host via a telnet
-  connection.
+  HTML5/jquery-ui GUI with a PHP backend. 
+  This is meant to control plugins running embedded in a mod-host through a 
+  telnet connection, but could be adapted to other uses easily.
   
   This is a horrible stylesheet. That is because there is no bijective mapping
   of Turtle triplets to XML - triplets can be grouped for brevity or not. Hence,
@@ -20,6 +21,7 @@
     #~> rm output.ttl
     #~> lv2info -p output.ttl http://gareus.org/oss/lv2/fil4#stereo
     #~> lv2info -p output.ttl http://calf.sourceforge.net/plugins/Compressor
+        ...
   2. Convert the turtle file to RDF/XML:
    a. Using http://www.l3s.de/~minack/rdf2rdf/:
     #~> java -jar rdf2rdf-1.0.1-2.3.1.jar output.ttl output.xml
@@ -39,7 +41,7 @@
   
   There is a very clean alternative converter at http://www.easyrdf.org/converter
   which appears to do perfect grouping, but I'm a bit wary of supporting it because
-  it has namespace troubles and seems to make a few risky guesses...
+  it requires PHP, fails to include namespace prefixes and seems to make a few risky guesses...
 -->
 
 <xsl:stylesheet version="1.0" 
@@ -65,6 +67,18 @@
 <xsl:key name="descriptionsByAbout" match="rdf:Description[@rdf:about]" use="@rdf:about"/>
 
 <xsl:template match="/">
+<xsl:processing-instruction name="php"> 
+
+define("HOST", "192.168.1.21");
+define("PORT", 5555);
+
+$fp = fsockopen(HOST, PORT);
+
+fclose($fp);
+
+$plugin_parameters = array();
+
+</xsl:processing-instruction>
 <html>
   <head>
     <meta charset="utf-8"/>
@@ -72,28 +86,26 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">&#8203;</script>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
     <script type="text/javascript">
-  
+
+const SLIDER_RESOLUTION=1024;
+
 function round(value, decimals) {
   var f = Math.pow(10, decimals);
   return Math.round(value * f)/f;
 }
     
 function lin2log(value, min, max) {
-  var minpos = 0;
-  var maxpos = 1000;
   var minval = Math.log(min);
   var maxval = Math.log(max);
-  var ratio = (maxval - minval) / (maxpos - minpos);
-  return Math.exp(minval + ratio * (value - minpos));
+  var ratio = (maxval - minval) / (SLIDER_RESOLUTION);
+  return Math.exp(minval + ratio * value);
 }
    
 function log2lin(value, min, max) {
-  var minpos = 0;
-  var maxpos = 1000;
   var minval = Math.log(min);
   var maxval = Math.log(max);
-  var ratio = (maxval - minval) / (maxpos - minpos);
-  return (Math.log(value) - minval) / ratio + minpos;
+  var ratio = (maxval - minval) / (SLIDER_RESOLUTION);
+  return (Math.log(value) - minval) / ratio;
 }
   
     </script>
@@ -119,8 +131,9 @@ div.slider {
   display: inline-block;
   width: 11em;
 }
-input.value {
+input.value, div.range {
   width: 11ex;
+  max-width: 11ex;
   text-align: right;
   margin-left: 1ex;
   display: inline-block;
@@ -141,6 +154,14 @@ div.comment {
     <div>
       <xsl:apply-templates/>
     </div>
+    
+    <div>
+    <pre>
+<xsl:processing-instruction name="php">
+   var_dump($plugin_parameters);
+</xsl:processing-instruction>
+    </pre>    
+    </div>
   </body>
 </html>
 </xsl:template>
@@ -153,6 +174,11 @@ div.comment {
       and count(. | key('descriptionsByAbout', @rdf:about)[1]) = 1
     ]
   ">
+    <xsl:processing-instruction name="php">
+    
+$plugin_parameters['<xsl:value-of select="@rdf:about"/>'] = []; 
+
+    </xsl:processing-instruction>
     <div class="pluginGUI {@rdf:about}">
       <h1>
         <xsl:value-of select="
@@ -180,27 +206,43 @@ div.comment {
       </div>
       <form>
 
-        <!-- iterate over all nodeIDs that belong to the current plugin -->
+        <!-- iterate over all descriptions that belong to the current plugin URI -->
         <xsl:for-each select="
           /rdf:RDF/rdf:Description[
             @rdf:about = current()/@rdf:about
           ]
         ">
 
-          <!-- iterate over all unique descriptions with this nodeID 
-               which are both InputPort and ControlPort -->
+          <!-- iterate over all unique descriptions of this nodeID 
+               for which exist InputPort and ControlPort resources -->
           <xsl:for-each select="
             /rdf:RDF/rdf:Description[
               @rdf:nodeID = current()/lv2:port/@rdf:nodeID 
-              and /rdf:RDF/rdf:Description[
-                @rdf:nodeID = current()/lv2:port/@rdf:nodeID
-              ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
-              and /rdf:RDF/rdf:Description[
-                @rdf:nodeID = current()/lv2:port/@rdf:nodeID
-              ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
-              and count(. | key('descriptionsByNodeID', current()/lv2:port/@rdf:nodeID)[1]) = 1
+              and 
+                /rdf:RDF/rdf:Description[
+                  @rdf:nodeID = current()/lv2:port/@rdf:nodeID
+                ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
+              and 
+                /rdf:RDF/rdf:Description[
+                  @rdf:nodeID = current()/lv2:port/@rdf:nodeID
+                ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
+              and 
+                count(. | key('descriptionsByNodeID', current()/lv2:port/@rdf:nodeID)[1]) = 1
             ]
           ">
+            <xsl:sort select="
+              /rdf:RDF/rdf:Description[
+                @rdf:nodeID = current()/lv2:port/@rdf:nodeID 
+              ]/lv2:index"
+              data-type="number" 
+            />
+            <xsl:processing-instruction name="php">
+    
+$plugin_parameters['<xsl:value-of 
+              select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()/@rdf:nodeID]/@rdf:about"/>']['<xsl:value-of 
+              select="/rdf:RDF/rdf:Description[@rdf:nodeID = current()/@rdf:nodeID]/lv2:symbol"/>'] = 0;
+              
+            </xsl:processing-instruction>
             <div class="formItem">
               <label for="{current()/@rdf:nodeID}">
                 <xsl:apply-templates select="
@@ -264,7 +306,7 @@ div.comment {
                     ">
                       <xsl:attribute name="checked">checked</xsl:attribute>
                     </xsl:if>
-                  </input>
+                  </input>range
                 </xsl:when>
                 
                 <!-- decimal value or integer range > 2: jQuery-ui slider -->
@@ -294,9 +336,26 @@ div.comment {
                   <input 
                     class="value" 
                     id="{current()/@rdf:nodeID}_" 
-                    value="{/rdf:RDF/rdf:Description[
-                      @rdf:nodeID = current()/@rdf:nodeID 
-                    ]/lv2:default}"
+                    name="{
+                      /rdf:RDF/rdf:Description[
+                        @rdf:nodeID = current()/@rdf:nodeID 
+                      ]/lv2:symbol
+                    }"
+                    value="{
+                      /rdf:RDF/rdf:Description[
+                        @rdf:nodeID = current()/@rdf:nodeID 
+                      ]/lv2:default
+                    }"
+                    min="{
+                      /rdf:RDF/rdf:Description[
+                        @rdf:nodeID = current()/@rdf:nodeID 
+                      ]/lv2:minimum
+                    }"
+                    max="{
+                      /rdf:RDF/rdf:Description[
+                        @rdf:nodeID = current()/@rdf:nodeID 
+                      ]/lv2:maximum
+                    }"
                   />
                 <xsl:choose>
                 
@@ -323,8 +382,8 @@ div.comment {
                         @rdf:nodeID = current()/@rdf:nodeID 
                       ]/lv2:maximum"/>
                       <xsl:text>), 2),
-                          min: 1,
-                          max: 1000,
+                          min: 0,
+                          max: SLIDER_RESOLUTION,
                           step: 1,
                           slide: function(event, ui) {
                             $("#</xsl:text>
@@ -392,7 +451,7 @@ div.comment {
                       <xsl:value-of select="/rdf:RDF/rdf:Description[
                         @rdf:nodeID = current()/@rdf:nodeID 
                       ]/lv2:minimum"/>
-                      <xsl:text>) / 1024,
+                      <xsl:text>) / SLIDER_RESOLUTION,
                           slide: function(event, ui) {
                             $("#</xsl:text>
                       <xsl:value-of select="current()/@rdf:nodeID"/>
@@ -415,16 +474,48 @@ div.comment {
                 </xsl:when>
 
                 <xsl:otherwise>
-                  <input id="{current()/@rdf:nodeID}" name="{/rdf:RDF/rdf:Description[
-                    @rdf:nodeID = current()/@rdf:nodeID 
-                  ]/lv2:symbol}"/>
-                    
+                  <xsl:comment>lv2rdf2html: unrecognized parameter type, falling back to data entry field.</xsl:comment>
+                  <input 
+                    id="{current()/@rdf:nodeID}" 
+                    name="{
+                      /rdf:RDF/rdf:Description[
+                        @rdf:nodeID = current()/@rdf:nodeID 
+                      ]/lv2:symbol
+                    }"
+                    value="{
+                      /rdf:RDF/rdf:Description[
+                        @rdf:nodeID = current()/@rdf:nodeID 
+                      ]/lv2:default
+                    }"
+                    min="{
+                      /rdf:RDF/rdf:Description[
+                        @rdf:nodeID = current()/@rdf:nodeID 
+                      ]/lv2:minimum
+                    }"
+                    max="{
+                      /rdf:RDF/rdf:Description[
+                        @rdf:nodeID = current()/@rdf:nodeID 
+                      ]/lv2:maximum
+                    }"
+                  />  
+                  <div class="range">
+                    <xsl:value-of select=" 
+                      /rdf:RDF/rdf:Description[
+                        @rdf:nodeID = current()/@rdf:nodeID 
+                      ]/lv2:minimum
+                    "/>
+                    <xsl:text> &lt;= x &lt;= </xsl:text>
+                    <xsl:value-of select=" 
+                      /rdf:RDF/rdf:Description[
+                        @rdf:nodeID = current()/@rdf:nodeID 
+                      ]/lv2:maximum
+                    "/>   
+                  </div>    
                 </xsl:otherwise>
   
                  </xsl:choose>
                  </div>
-                 <div class="unit">&#8203;
-                   <xsl:apply-templates select="/rdf:RDF/rdf:Description[
+                 <div class="unit">&#8203;<xsl:apply-templates select="/rdf:RDF/rdf:Description[
                      @rdf:nodeID = current()/@rdf:nodeID 
                    ]/lv2units:unit"/>
                  </div>
@@ -456,6 +547,7 @@ div.comment {
     <xsl:when test="@rdf:resource='http://lv2plug.in/ns/extensions/units#ms'"><abbr title="milliseconds">ms</abbr></xsl:when>
     <xsl:when test="@rdf:resource='http://lv2plug.in/ns/extensions/units#bpm'"><abbr title="beats per minute">BPM</abbr></xsl:when>
     <xsl:otherwise>
+      <xsl:comment>lv2rdf2html: unrecognized unit <xsl:copy-of select="."/>. Falling back to generic display.</xsl:comment>
       <xsl:value-of select="
         translate(
           substring(
