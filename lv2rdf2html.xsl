@@ -67,18 +67,27 @@
 <xsl:key name="descriptionsByAbout" match="rdf:Description[@rdf:about]" use="@rdf:about"/>
 
 <xsl:template match="/">
-<xsl:processing-instruction name="php"> 
 
+
+<xsl:processing-instruction name="php">
+<![CDATA[
 define("HOST", "192.168.1.21");
 define("PORT", 5555);
+define("TIMEOUT", 3);
+$errno = 0; 
+$errmsg = '';
+$usermsg = ''; 
 
-$fp = fsockopen(HOST, PORT);
-
-fclose($fp);
-
+$fp = fsockopen(HOST, PORT, $errno, $errmsg, 3);
+stream_set_timeout($fp, TIMEOUT);
+if (!$fp) {
+  $usermsg = "Could not connect to mod-host at ".HOST.":".PORT." within a timeout of ".TIMEOUT." seconds. ERRNO='".$errno."', ERRMSG='".$errmsg."'.";
+}
 $plugin_parameters = array();
-
+]]>
 </xsl:processing-instruction>
+
+
 <html>
   <head>
     <meta charset="utf-8"/>
@@ -111,8 +120,17 @@ function log2lin(value, min, max) {
     </script>
     <style type="text/css">
       <xsl:text>
+div {
+  border: 1px grey dotted;
+}
+div.pluginGUI {
+  display: table;
+}
+div.pluginGUI h1 {
+  display: table-row;
+}
 form { 
-  display: table; 
+  display: row-group; 
   border-collapse: separate;
   border-spacing: 1ex;
   border: 1px solid;
@@ -138,6 +156,10 @@ input.value, div.range {
   margin-left: 1ex;
   display: inline-block;
 }
+div.range {
+  font-size: 60%;
+  font-weight: bold;
+}
 div.unit {
   display: table-cell;
   width: 6em;
@@ -151,16 +173,9 @@ div.comment {
     </style>
   </head>
   <body>
+<xsl:processing-instruction name="php">echo "<h1>$usermsg</h1>";</xsl:processing-instruction>
     <div>
       <xsl:apply-templates/>
-    </div>
-    
-    <div>
-    <pre>
-<xsl:processing-instruction name="php">
-   var_dump($plugin_parameters);
-</xsl:processing-instruction>
-    </pre>    
     </div>
   </body>
 </html>
@@ -174,11 +189,16 @@ div.comment {
       and count(. | key('descriptionsByAbout', @rdf:about)[1]) = 1
     ]
   ">
-    <xsl:processing-instruction name="php">
+
+<xsl:text>
+</xsl:text>
+<xsl:processing-instruction name="php">
     
 $plugin_parameters['<xsl:value-of select="@rdf:about"/>'] = []; 
 
-    </xsl:processing-instruction>
+</xsl:processing-instruction>
+
+
     <div class="pluginGUI {@rdf:about}">
       <h1>
         <xsl:value-of select="
@@ -236,13 +256,16 @@ $plugin_parameters['<xsl:value-of select="@rdf:about"/>'] = [];
               ]/lv2:index"
               data-type="number" 
             />
-            <xsl:processing-instruction name="php">
+<xsl:text>
+</xsl:text>            
+<xsl:processing-instruction name="php">
     
 $plugin_parameters['<xsl:value-of 
               select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()/@rdf:nodeID]/@rdf:about"/>']['<xsl:value-of 
               select="/rdf:RDF/rdf:Description[@rdf:nodeID = current()/@rdf:nodeID]/lv2:symbol"/>'] = 0;
               
-            </xsl:processing-instruction>
+</xsl:processing-instruction>
+            
             <div class="formItem">
               <label for="{current()/@rdf:nodeID}">
                 <xsl:apply-templates select="
@@ -250,6 +273,18 @@ $plugin_parameters['<xsl:value-of
                     @rdf:nodeID = current()/@rdf:nodeID 
                   ]/lv2:name
                 "/>
+                <xsl:if test="
+                     /rdf:RDF/rdf:Description[
+                       @rdf:nodeID = current()/@rdf:nodeID 
+                     ]/rdfs:comment
+                ">
+                  <xsl:text> </xsl:text>
+                  <abbr title="{
+                     /rdf:RDF/rdf:Description[
+                       @rdf:nodeID = current()/@rdf:nodeID 
+                     ]/rdfs:comment
+                  }">&#8505;</abbr>
+                </xsl:if>
               </label>
               <div class="input">&#8203;
               <xsl:choose>
@@ -306,10 +341,10 @@ $plugin_parameters['<xsl:value-of
                     ">
                       <xsl:attribute name="checked">checked</xsl:attribute>
                     </xsl:if>
-                  </input>range
+                  </input>
                 </xsl:when>
                 
-                <!-- decimal value or integer range > 2: jQuery-ui slider -->
+                <!-- decimal value or integer  > 2: jQuery-ui slider -->
                 <xsl:when test="
                   /rdf:RDF/rdf:Description[
                     @rdf:nodeID = current()/@rdf:nodeID 
@@ -519,13 +554,6 @@ $plugin_parameters['<xsl:value-of
                      @rdf:nodeID = current()/@rdf:nodeID 
                    ]/lv2units:unit"/>
                  </div>
-
-                 <div class="comment">&#8203;<xsl:value-of select="
-                   /rdf:RDF/rdf:Description[
-                     @rdf:nodeID = current()/@rdf:nodeID 
-                   ]/rdfs:comment
-                 "/>
-                 </div>  
                </div>  
                
             </xsl:for-each>
@@ -536,7 +564,43 @@ $plugin_parameters['<xsl:value-of
       </div>
     
     </xsl:for-each>
-    
+    <div class="debug">
+      <pre>
+
+<xsl:text>
+</xsl:text>
+
+
+<xsl:processing-instruction name="php"> 
+
+   $i=0;
+   foreach ($plugin_parameters as $uri => $params) {
+     $i++;
+     foreach ($params as $symbol => $value) {
+       echo "$uri -> $symbol = $value\n";
+       $req = 'param_get '.$i.' '.$symbol;
+       echo "$req... :\n";
+       fwrite($fp, $req);
+       $res = fread($fp, 256);
+       $res = preg_split('/ +/', $res, 3);
+       echo "res[0]=$res[0]\n";
+       echo "res[1]=$res[1]\n";
+       echo "res[2]=$res[2]\n";
+          
+       $plugin_parameters[$uri][$symbol]=$res[2];
+           
+      
+     }
+   } 
+   var_dump($plugin_parameters);
+   
+     
+   fclose($fp);
+
+</xsl:processing-instruction>
+
+      </pre>   
+    </div>    
 </xsl:template> 
 
 <xsl:template match="lv2units:unit">
@@ -564,15 +628,13 @@ $plugin_parameters['<xsl:value-of
 </xsl:template>
 
 <xsl:template match="doap:license">
-  <p>License:
-    <xsl:value-of select="
+  <p>License: <xsl:value-of select="
       translate(
         substring(
           @rdf:resource, 36
         ), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
       )
-    "/>
-  </p>
+  "/></p>
 </xsl:template>
 
 <xsl:template match="foaf:name">
