@@ -10,23 +10,24 @@
 -->  
 
 <xsl:stylesheet version="1.0" 
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:doap="http://usefulinc.com/ns/doap#"
-        xmlns:foaf="http://xmlns.com/foaf/0.1/"
-        xmlns:lv2="http://lv2plug.in/ns/lv2core#"
-        xmlns:lv2units="http://lv2plug.in/ns/extensions/units#"
-	xmlns:atom="http://lv2plug.in/ns/ext/atom#"
-        xmlns:owl="http://www.w3.org/2002/07/owl#"
-        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-        xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-
-	exclude-result-prefixes="xsl doap foaf lv2 lv2units atom owl rdf rdfs xsd"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:doap="http://usefulinc.com/ns/doap#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:lv2="http://lv2plug.in/ns/lv2core#"
+  xmlns:lv2units="http://lv2plug.in/ns/extensions/units#"
+  xmlns:atom="http://lv2plug.in/ns/ext/atom#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  exclude-result-prefixes="xsl doap foaf lv2 lv2units atom owl rdf rdfs xsd"
 >
+
 <xsl:output method="xml" omit-xml-declaration="yes"/>
 <xsl:preserve-space elements="xsl:text *"/>
 
 <xsl:include href="gui-elements.xsl"/>
+<xsl:include href="gui-helpers.xsl"/>
 
 <xsl:key name="descriptionsByNodeID" match="rdf:Description[@rdf:nodeID]" use="@rdf:nodeID"/>
 <xsl:key name="descriptionsByAbout" match="rdf:Description[@rdf:about]" use="@rdf:about"/>
@@ -67,6 +68,44 @@ $plugin_parameters = array();
 </html>
 </xsl:template>
 
+<xsl:template match="/rdf:RDF">
+  <xsl:call-template name="iterateOverPlugins"/>
+  <div class="debug">
+    <pre>
+
+<xsl:text>
+</xsl:text>
+<xsl:processing-instruction name="php"> 
+
+   $i=0;
+   foreach ($plugin_parameters as $uri => $params) {
+     $i++;
+     foreach ($params as $symbol => $value) {
+       echo "$uri -> $symbol = $value\n";
+       $req = 'param_get '.$i.' '.$symbol;
+       echo "$req... :\n";
+       fwrite($fp, $req);
+       $res = fread($fp, 256);
+       $res = preg_split('/ +/', $res, 3);
+       echo "res[0]=$res[0]\n";
+       echo "res[1]=$res[1]\n";
+       echo "res[2]=$res[2]\n";
+          
+       $plugin_parameters[$uri][$symbol]=$res[2];
+           
+      
+     }
+   } 
+   var_dump($plugin_parameters);
+   
+     
+   fclose($fp);
+
+</xsl:processing-instruction>
+
+    </pre>   
+  </div>    
+</xsl:template> 
 <xsl:template name="iterateOverPlugins">
   <!-- iterate over each unique plugin URI -->
   <xsl:for-each select="
@@ -115,82 +154,8 @@ $plugin_parameters = array();
   </xsl:for-each>
 </xsl:template>
 
-<xsl:template match="/rdf:RDF">
-  <xsl:call-template name="iterateOverPlugins"/>
-  <div class="debug">
-    <pre>
 
-<xsl:text>
-</xsl:text>
-<xsl:processing-instruction name="php"> 
 
-   $i=0;
-   foreach ($plugin_parameters as $uri => $params) {
-     $i++;
-     foreach ($params as $symbol => $value) {
-       echo "$uri -> $symbol = $value\n";
-       $req = 'param_get '.$i.' '.$symbol;
-       echo "$req... :\n";
-       fwrite($fp, $req);
-       $res = fread($fp, 256);
-       $res = preg_split('/ +/', $res, 3);
-       echo "res[0]=$res[0]\n";
-       echo "res[1]=$res[1]\n";
-       echo "res[2]=$res[2]\n";
-          
-       $plugin_parameters[$uri][$symbol]=$res[2];
-           
-      
-     }
-   } 
-   var_dump($plugin_parameters);
-   
-     
-   fclose($fp);
-
-</xsl:processing-instruction>
-
-    </pre>   
-  </div>    
-</xsl:template> 
-
-<xsl:template match="lv2units:unit">
-  <xsl:choose>
-    <xsl:when test="@rdf:resource='http://lv2plug.in/ns/extensions/units#hz'"><abbr title="Hertz [1/s]">Hz</abbr></xsl:when>
-    <xsl:when test="@rdf:resource='http://lv2plug.in/ns/extensions/units#db'"><abbr title="deciBel">dB</abbr></xsl:when>
-    <xsl:when test="@rdf:resource='http://lv2plug.in/ns/extensions/units#coef'"><abbr title="generic coefficient">[coeff]</abbr></xsl:when>
-    <xsl:when test="@rdf:resource='http://lv2plug.in/ns/extensions/units#ms'"><abbr title="milliseconds">ms</abbr></xsl:when>
-    <xsl:when test="@rdf:resource='http://lv2plug.in/ns/extensions/units#bpm'"><abbr title="beats per minute">BPM</abbr></xsl:when>
-    <xsl:otherwise>
-      <xsl:comment>lv2rdf2html: unrecognized unit <xsl:copy-of select="."/>. Falling back to generic display.</xsl:comment>
-      <xsl:value-of select="
-        translate(
-          substring(
-            @rdf:resource, 39
-          ), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        )
-      "/>
-    </xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
-<xsl:template match="rdfs:comment">
-  <p><xsl:value-of select="."/></p>
-</xsl:template>
-
-<xsl:template match="doap:license">
-  <p>License: <xsl:value-of select="
-      translate(
-        substring(
-          @rdf:resource, 36
-        ), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-      )
-  "/></p>
-</xsl:template>
-
-<xsl:template match="foaf:name">
-  <p>Author: <xsl:value-of select="."/></p>
-</xsl:template>
 
 
 <xsl:template name="createPluginParameterGUI">
