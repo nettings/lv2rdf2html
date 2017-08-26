@@ -133,7 +133,7 @@ fclose($fp);
   ">
      <!-- iterate over all InputPorts that are ControlPorts -->
      <xsl:for-each select="
-       key('descriptionsByNodeID', current())[
+       key('descriptionsByNodeID', current())[ 
          rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
          and 
          key('descriptionsByNodeID', current())[

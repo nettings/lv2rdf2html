@@ -21,27 +21,11 @@
 >
 
 <xsl:template name="pluginParameterEnumeration">
-  <select id="{current()}" name="{
-    /rdf:RDF/rdf:Description[
-      @rdf:nodeID = current()
-    ]/lv2:symbol
-  }">
+  <select id="{current()}" name="{key('descriptionsByNodeID', current())/lv2:symbol}">
     <!-- iterate over all descriptions belonging to the current nodeID. --> 
-    <xsl:for-each select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current() and lv2:scalePoint
-      ]
-    ">
-      <option value="{
-        /rdf:RDF/rdf:Description[
-          @rdf:nodeID = current()/lv2:scalePoint/@rdf:nodeID
-        ]/rdf:value
-      }">
-        <xsl:value-of select="
-          /rdf:RDF/rdf:Description[
-            @rdf:nodeID = current()/lv2:scalePoint/@rdf:nodeID
-          ]/rdfs:label
-        "/>
+    <xsl:for-each select="key('descriptionsByNodeID', current())[lv2:scalePoint]">
+      <option value="{key('descriptionsByNodeID', current()/lv2:scalePoint/@rdf:nodeID)/rdf:value}">
+        <xsl:value-of select="key('descriptionsByNodeID', current()/lv2:scalePoint/@rdf:nodeID)/rdfs:label"/>
       </option>                     
     </xsl:for-each>
   </select>
@@ -50,14 +34,9 @@
 <xsl:template name="pluginParameterCheckbox">
   <input type="checkbox"> 
     <xsl:if test="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current() 
-      ]/lv2:default 
+      key('descriptionsByNodeID', current())/lv2:default 
       and 
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current() 
-      ]/lv2:default 
-      != 0
+      key('descriptionsByNodeID', current())//lv2:default != 0
     ">
       <xsl:attribute name="checked">checked</xsl:attribute>
     </xsl:if>
@@ -69,33 +48,16 @@
   <input 
     class="value" 
     id="{current()}_" 
-    name="{
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:symbol
-    }"
-    value="{
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:default
-    }"
-    min="{
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:minimum
-    }"
-    max="{
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:maximum
-    }"
+    name="{key('descriptionsByNodeID', current())/lv2:symbol}"
+    value="{key('descriptionsByNodeID', current())/lv2:default}"
+    min="{key('descriptionsByNodeID', current())/lv2:minimum}"
+    max="{key('descriptionsByNodeID', current())/lv2:maximum}"
   />
   <xsl:choose>
     <!-- logarithmic slider -->
     <xsl:when test="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/ext/port-props#logarithmic'
+      key('descriptionsByNodeID', current())/lv2:portProperty/@rdf:resource 
+      = 'http://lv2plug.in/ns/ext/port-props#logarithmic'
     ">
       <xsl:call-template name="pluginParameterSliderLog"/>
     </xsl:when>
@@ -114,23 +76,11 @@ $( function() {
     <xsl:value-of select="current()"/>
     <xsl:text>" ).slider({
     value: round(log2lin(</xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:default
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>
     <xsl:text>,</xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:minimum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
     <xsl:text>,</xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:maximum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
     <xsl:text>), 2),
     min: 0,
     max: SLIDER_RESOLUTION,
@@ -139,17 +89,9 @@ $( function() {
       $("#</xsl:text>
     <xsl:value-of select="current()"/>
     <xsl:text>_").val(round(lin2log(ui.value,</xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:minimum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
     <xsl:text>,</xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:maximum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
     <xsl:text>), 2));
     }                       
   });
@@ -161,17 +103,9 @@ $("#</xsl:text>
   $("#</xsl:text>
     <xsl:value-of select="current()"/>
     <xsl:text>").slider("value", log2lin(value,</xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:minimum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
     <xsl:text>,</xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:maximum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
     <xsl:text>));
 });
     </xsl:text>
@@ -186,38 +120,18 @@ $( function() {
     <xsl:value-of select="current()"/>
     <xsl:text>" ).slider({
     value: </xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:default
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>
     <xsl:text>,
     min: </xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:minimum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
     <xsl:text>,
     max: </xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:maximum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
     <xsl:text>,
     step: (</xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:maximum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
     <xsl:text> - </xsl:text>
-    <xsl:value-of select="
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:minimum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
     <xsl:text>) / SLIDER_RESOLUTION,
     slide: function(event, ui) {
       $("#</xsl:text>
@@ -241,39 +155,15 @@ $("#</xsl:text>
 <xsl:template name="pluginParameterInput">
   <input 
     id="{current()}" 
-    name="{
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:symbol
-    }"
-    value="{
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:default
-    }"
-    min="{
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:minimum
-    }"
-    max="{
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:maximum
-    }"
+    name="{key('descriptionsByNodeID', current())/lv2:symbol}"
+    value="{key('descriptionsByNodeID', current())/lv2:default}"
+    min="{key('descriptionsByNodeID', current())/lv2:minimum}"
+    max="{key('descriptionsByNodeID', current())/lv2:maximum}"
   />  
   <div class="range">
-    <xsl:value-of select=" 
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:minimum
-    "/>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
     <xsl:text> &#8804; x &#8804; </xsl:text>
-    <xsl:value-of select=" 
-      /rdf:RDF/rdf:Description[
-        @rdf:nodeID = current()
-      ]/lv2:maximum
-    "/>   
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>   
   </div>    
 </xsl:template>
 
