@@ -109,6 +109,24 @@ fclose($fp);
 </xsl:template>
 
 
+<xsl:template name="createPluginGUI">
+<xsl:processing-instruction name="php">$plugin_parameters['<xsl:value-of select="."/>'] = [];</xsl:processing-instruction>
+   <div class="pluginGUI {.}">
+      <h1>
+        <xsl:value-of select="key('descriptionsByAbout', current())/doap:name"/>
+      </h1>
+      <div class="info">
+        <xsl:apply-templates select="key('descriptionsByAbout', current())/rdfs:comment"/>
+        <xsl:apply-templates select="key('descriptionsByAbout', current())/doap:license"/>
+        <xsl:apply-templates select="key('descriptionsByAbout', current())/foaf:name"/>
+      </div>
+      <form>
+        <xsl:call-template name="iterateOverPluginParameters"/>
+      </form>
+    </div>    
+</xsl:template>
+
+
 <xsl:template name="iterateOverPluginParameters">
   <!-- iterate over all descriptions that belong to the current plugin URI -->
   <xsl:for-each select="key('descriptionsByAbout', current())/lv2:port/@rdf:nodeID
@@ -193,30 +211,5 @@ $plugin_parameters['<xsl:value-of
   </div>  
 </xsl:template>
 
-
-<xsl:template name="createPluginParameterList">
-</xsl:template>
-
-
-<xsl:template name="createPluginGUI">
-<xsl:processing-instruction name="php">$plugin_parameters['<xsl:value-of select="."/>'] = [];</xsl:processing-instruction>
-   <div class="pluginGUI {.}">
-      <h1>
-        <xsl:value-of select="key('descriptionsByAbout', current())/doap:name"/>
-      </h1>
-      <div class="info">
-        <xsl:apply-templates select="key('descriptionsByAbout', current())/rdfs:comment"/>
-        <xsl:apply-templates select="key('descriptionsByAbout', current())/doap:license"/>
-        <xsl:apply-templates select="key('descriptionsByAbout', current())/foaf:name"/>
-      </div>
-      <form>
-        <xsl:call-template name="iterateOverPluginParameters"/>
-      </form>
-    </div>    
-</xsl:template>
-
-
-<xsl:template name="createPluginList">
-</xsl:template>
 
 </xsl:stylesheet>
