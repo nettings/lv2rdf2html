@@ -43,8 +43,16 @@ $plugin_parameters = array();
 <html>
   <head>
     <meta charset="utf-8"/>
-    <script src="https://code.jquery.com/jquery-3.2.1.js">&#8203;</script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">&#8203;</script>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous">
+    </script>   
+    <script
+      src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+      integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+      crossorigin="anonymous">
+    </script>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
     <script type="text/javascript" href="lv2rdf2html.js">&#8203;</script>
     <link rel="stylesheet" href="lv2rdf2html.css" />
@@ -109,30 +117,23 @@ fclose($fp);
       @rdf:about = current()/@rdf:about
     ]
   ">
-     <!-- iterate over all unique descriptions of this nodeID 
-          for which exist InputPort and ControlPort resources -->
+     <!-- iterate over all InputPorts that are ControlPorts -->
      <xsl:for-each select="
-       /rdf:RDF/rdf:Description[
-         @rdf:nodeID = current()/lv2:port/@rdf:nodeID 
-         and 
          /rdf:RDF/rdf:Description[
            @rdf:nodeID = current()/lv2:port/@rdf:nodeID
-         ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
-         and 
-         /rdf:RDF/rdf:Description[
-           @rdf:nodeID = current()/lv2:port/@rdf:nodeID
-         ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
-         and 
-         count(. | key('descriptionsByNodeID', current()/lv2:port/@rdf:nodeID)[1]) = 1
-       ]
+           and
+           rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
+           and
+           /rdf:RDF/rdf:Description[
+             @rdf:nodeID = current()/lv2:port/@rdf:nodeID
+           ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
+         ]
      ">
-        <xsl:sort select="
-          /rdf:RDF/rdf:Description[
-            @rdf:nodeID = current()/lv2:port/@rdf:nodeID 
-          ]/lv2:index"
-          data-type="number" 
+        <xsl:sort select="."
+         
+          order="descending"
         />
-       <xsl:call-template name="createPluginParameterGUI"/>
+       <xsl:call-template name="createPluginParameterGUI"/>     
      </xsl:for-each>
   </xsl:for-each>
 </xsl:template>
@@ -151,18 +152,11 @@ $plugin_parameters['<xsl:value-of
           @rdf:nodeID = current()/@rdf:nodeID 
         ]/lv2:name
       "/>
-      <xsl:if test="
-           /rdf:RDF/rdf:Description[
-             @rdf:nodeID = current()/@rdf:nodeID 
-           ]/rdfs:comment
-      ">
-        <xsl:text> </xsl:text>
-        <abbr title="{
-           /rdf:RDF/rdf:Description[
-             @rdf:nodeID = current()/@rdf:nodeID 
-           ]/rdfs:comment
-        }">&#8505;</abbr>
-      </xsl:if>
+      <xsl:apply-templates select="
+        /rdf:RDF/rdf:Description[
+          @rdf:nodeID = current()/@rdf:nodeID
+        ]/rdfs:comment
+      "/>
     </label>
     <div class="input">&#8203;
       <xsl:choose>
