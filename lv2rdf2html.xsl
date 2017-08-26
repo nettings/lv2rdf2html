@@ -66,6 +66,10 @@
 
 
 <xsl:template name="handlePlugin">
+  <script>
+plugin_parameters = {'<xsl:value-of select="."/>' : {} };
+  </script>
+  <xsl:call-template name="iterateOverPluginParameters"/>
   <div class="pluginGUI {.}">
     <h1>
       <xsl:value-of select="key('descriptionsByAbout', current())/doap:name"/>
@@ -83,6 +87,11 @@
 
 
 <xsl:template name="handlePluginParameter">
+  <script>
+plugin_parameters['<xsl:value-of 
+      select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()]/@rdf:about"/>']['<xsl:value-of 
+      select="key('descriptionsByNodeID', current())/lv2:symbol"/>'] = 0;
+  </script>
   <div class="formItem">
     <label for="{current()}">
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2:name"/>

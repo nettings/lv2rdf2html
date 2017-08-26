@@ -22,6 +22,7 @@
 <xsl:key name="descriptionsByNodeID" match="/rdf:RDF/rdf:Description[@rdf:nodeID]" use="@rdf:nodeID"/>
 <xsl:key name="descriptionsByAbout" match="/rdf:RDF/rdf:Description[@rdf:about]" use="@rdf:about"/>
 
+
 <xsl:template name="iterateOverPlugins">
   <!-- iterate over each unique plugin URI -->
   <xsl:for-each select="
