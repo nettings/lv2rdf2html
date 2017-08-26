@@ -6,6 +6,23 @@
 
 const SLIDER_RESOLUTION=1024;
 
+var pluginParameters;
+
+$( function() {
+
+};
+
+function getPluginValues() {
+  $.ajax({
+        url:     "pluginController.php",
+        settings: accepts: {
+                             lv2data : 'application/x-lv2data'
+                           },
+                  cache:   false,
+        FIXME
+   });
+
+}
 function round(value, decimals) {
   var f = Math.pow(10, decimals);
   return Math.round(value * f)/f;
