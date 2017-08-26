@@ -24,7 +24,6 @@
 >
 
 <xsl:output method="xml" omit-xml-declaration="yes"/>
-<xsl:preserve-space elements="xsl:text *"/>
 
 <xsl:include href="gui-elements.xsl"/>
 <xsl:include href="gui-helpers.xsl"/>
@@ -110,7 +109,11 @@ fclose($fp);
 
 
 <xsl:template name="createPluginGUI">
-<xsl:processing-instruction name="php">$plugin_parameters['<xsl:value-of select="."/>'] = [];</xsl:processing-instruction>
+<xsl:processing-instruction name="php">
+  $plugin_parameters['<xsl:value-of select="."/>'] = [];
+</xsl:processing-instruction>
+<xsl:text>
+</xsl:text>
    <div class="pluginGUI {.}">
       <h1>
         <xsl:value-of select="key('descriptionsByAbout', current())/doap:name"/>
@@ -153,17 +156,19 @@ fclose($fp);
 
 
 <xsl:template name="createPluginParameterGUI">
-  <xsl:processing-instruction name="php">
+<xsl:processing-instruction name="php">
 $plugin_parameters['<xsl:value-of 
               select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()]/@rdf:about"/>']['<xsl:value-of 
               select="key('descriptionsByNodeID', current())/lv2:symbol"/>'] = 0;
-  </xsl:processing-instruction>
+</xsl:processing-instruction>
+<xsl:text>
+</xsl:text>
   <div class="formItem">
     <label for="{current()}">
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2:name"/>
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/rdfs:comment"/>
     </label>
-    <div class="input">&#8203;
+    <div class="input">
       <xsl:choose>
         <!-- handle enumeration of options: dropdown -->
         <xsl:when test="
@@ -205,7 +210,7 @@ $plugin_parameters['<xsl:value-of
       </xsl:choose>
     </div>
     <div class="unit">
-      &#8203;
+      <xsl:text>&#8203;</xsl:text>
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2units:unit"/>
     </div>
   </div>  

@@ -32,7 +32,7 @@
 </xsl:template>
 
 <xsl:template name="pluginParameterCheckbox">
-  <input type="checkbox"> 
+  <input type="checkbox">
     <xsl:if test="
       key('descriptionsByNodeID', current())/lv2:default 
       and 
