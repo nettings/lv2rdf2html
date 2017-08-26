@@ -32,24 +32,14 @@
 <xsl:key name="descriptionsByNodeID" match="rdf:Description[@rdf:nodeID]" use="@rdf:nodeID"/>
 <xsl:key name="descriptionsByAbout" match="rdf:Description[@rdf:about]" use="@rdf:about"/>
 
+
 <xsl:template match="/">
-<xsl:processing-instruction name="php">
-<![CDATA[
+  <xsl:processing-instruction name="php">
 define("HOST", "192.168.1.21");
 define("PORT", 5555);
-define("TIMEOUT", 3);
-$errno = 0; 
-$errmsg = '';
-$usermsg = ''; 
-
-$fp = fsockopen(HOST, PORT, $errno, $errmsg, 3);
-stream_set_timeout($fp, TIMEOUT);
-if (!$fp) {
-  $usermsg = "Could not connect to mod-host at ".HOST.":".PORT." within a timeout of ".TIMEOUT." seconds. ERRNO='".$errno."', ERRMSG='".$errmsg."'.";
-}
+$fp = fsockopen(HOST, PORT);
 $plugin_parameters = array();
-]]>
-</xsl:processing-instruction>
+  </xsl:processing-instruction>
 <html>
   <head>
     <meta charset="utf-8"/>
@@ -60,7 +50,6 @@ $plugin_parameters = array();
     <link rel="stylesheet" href="lv2rdf2html.css" />
   </head>
   <body>
-<xsl:processing-instruction name="php">echo "<h1>$usermsg</h1>";</xsl:processing-instruction>
     <div>
       <xsl:apply-templates/>
     </div>
@@ -68,44 +57,38 @@ $plugin_parameters = array();
 </html>
 </xsl:template>
 
+
 <xsl:template match="/rdf:RDF">
   <xsl:call-template name="iterateOverPlugins"/>
   <div class="debug">
     <pre>
-
-<xsl:text>
-</xsl:text>
-<xsl:processing-instruction name="php"> 
-
-   $i=0;
-   foreach ($plugin_parameters as $uri => $params) {
-     $i++;
-     foreach ($params as $symbol => $value) {
-       echo "$uri -> $symbol = $value\n";
-       $req = 'param_get '.$i.' '.$symbol;
-       echo "$req... :\n";
-       fwrite($fp, $req);
-       $res = fread($fp, 256);
-       $res = preg_split('/ +/', $res, 3);
-       echo "res[0]=$res[0]\n";
-       echo "res[1]=$res[1]\n";
-       echo "res[2]=$res[2]\n";
-          
-       $plugin_parameters[$uri][$symbol]=$res[2];
-           
-      
-     }
-   } 
-   var_dump($plugin_parameters);
-   
-     
-   fclose($fp);
-
-</xsl:processing-instruction>
-
+      <xsl:text>
+      </xsl:text>
+      <xsl:processing-instruction name="php"> 
+$i=0;
+foreach ($plugin_parameters as $uri => $params) {
+  $i++;
+  foreach ($params as $symbol => $value) {
+    echo "$uri -> $symbol = $value\n";
+    $req = 'param_get '.$i.' '.$symbol;
+    echo "$req... :\n";
+    fwrite($fp, $req);
+    $res = fread($fp, 256);
+    $res = preg_split('/ +/', $res, 3);
+    echo "res[0]=$res[0]\n";
+    echo "res[1]=$res[1]\n";
+    echo "res[2]=$res[2]\n";
+    $plugin_parameters[$uri][$symbol]=$res[2];
+  }
+} 
+var_dump($plugin_parameters);
+fclose($fp);
+      </xsl:processing-instruction>
     </pre>   
   </div>    
 </xsl:template> 
+
+
 <xsl:template name="iterateOverPlugins">
   <!-- iterate over each unique plugin URI -->
   <xsl:for-each select="
@@ -155,15 +138,12 @@ $plugin_parameters = array();
 </xsl:template>
 
 
-
-
-
 <xsl:template name="createPluginParameterGUI">
-<xsl:processing-instruction name="php">
+  <xsl:processing-instruction name="php">
 $plugin_parameters['<xsl:value-of 
               select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()/@rdf:nodeID]/@rdf:about"/>']['<xsl:value-of 
               select="/rdf:RDF/rdf:Description[@rdf:nodeID = current()/@rdf:nodeID]/lv2:symbol"/>'] = 0;
-</xsl:processing-instruction>
+  </xsl:processing-instruction>
   <div class="formItem">
     <label for="{current()/@rdf:nodeID}">
       <xsl:apply-templates select="
@@ -247,8 +227,10 @@ $plugin_parameters['<xsl:value-of
   </div>  
 </xsl:template>
 
+
 <xsl:template name="createPluginParameterList">
 </xsl:template>
+
 
 <xsl:template name="createPluginGUI">
 <xsl:processing-instruction name="php">$plugin_parameters['<xsl:value-of select="@rdf:about"/>'] = [];</xsl:processing-instruction>
@@ -282,6 +264,7 @@ $plugin_parameters['<xsl:value-of
       </form>
     </div>    
 </xsl:template>
+
 
 <xsl:template name="createPluginList">
 </xsl:template>
