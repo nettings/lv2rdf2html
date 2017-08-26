@@ -20,6 +20,7 @@
 	exclude-result-prefixes="xsl doap foaf lv2 lv2units atom owl rdf rdfs xsd"
 >
 
+
 <xsl:template name="pluginParameterEnumeration">
   <select id="{current()}" name="{key('descriptionsByNodeID', current())/lv2:symbol}">
     <!-- iterate over all descriptions belonging to the current nodeID. --> 
@@ -30,6 +31,7 @@
     </xsl:for-each>
   </select>
 </xsl:template>
+
 
 <xsl:template name="pluginParameterCheckbox">
   <input type="checkbox">
@@ -42,6 +44,7 @@
     </xsl:if>
   </input>
 </xsl:template>
+
 
 <xsl:template name="pluginParameterSlider">
   <div class="slider" id="{current()}">&#8203;</div>
@@ -67,6 +70,7 @@
     </xsl:otherwise>    
   </xsl:choose>
 </xsl:template>
+
 
 <xsl:template name="pluginParameterSliderLog">
   <script type="text/javascript">
@@ -112,6 +116,7 @@ $("#</xsl:text>
   </script>
 </xsl:template>
 
+
 <xsl:template name="pluginParameterSliderLin">
   <script type="text/javascript">
     <xsl:text>
@@ -151,6 +156,7 @@ $("#</xsl:text>
     </xsl:text>
   </script>
 </xsl:template>
+
 
 <xsl:template name="pluginParameterInput">
   <input 

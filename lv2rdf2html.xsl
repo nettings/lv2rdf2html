@@ -23,23 +23,18 @@
   exclude-result-prefixes="xsl doap foaf lv2 lv2units atom owl rdf rdfs xsd"
 >
 
-<xsl:output method="xml" omit-xml-declaration="yes"/>
+<xsl:output 
+  method="xml" 
+  omit-xml-declaration="yes"
+/>
 
 <xsl:include href="gui-elements.xsl"/>
 <xsl:include href="gui-helpers.xsl"/>
-
-<xsl:key name="descriptionsByNodeID" match="/rdf:RDF/rdf:Description[@rdf:nodeID]" use="@rdf:nodeID"/>
-<xsl:key name="descriptionsByAbout" match="/rdf:RDF/rdf:Description[@rdf:about]" use="@rdf:about"/>
+<xsl:include href="iterators.xsl"/>
 
 
 <xsl:template match="/">
-  <xsl:processing-instruction name="php">
-define("HOST", "192.168.1.21");
-define("PORT", 5555);
-$fp = fsockopen(HOST, PORT);
-$plugin_parameters = array();
-  </xsl:processing-instruction>
-<html>
+<html> 
   <head>
     <meta charset="utf-8"/>
     <script
@@ -66,103 +61,28 @@ $plugin_parameters = array();
 
 
 <xsl:template match="/rdf:RDF">
-  <xsl:call-template name="iterateOverPlugins"/>
-  <div class="debug">
-    <pre>
-      <xsl:text>
-      </xsl:text>
-      <xsl:processing-instruction name="php"> 
-$i=0;
-foreach ($plugin_parameters as $uri => $params) {
-  $i++;
-  foreach ($params as $symbol => $value) {
-    echo "$uri -> $symbol = $value\n";
-    $req = 'param_get '.$i.' '.$symbol;
-    echo "$req... :\n";
-    fwrite($fp, $req);
-    $res = fread($fp, 256);
-    $res = preg_split('/ +/', $res, 3);
-    echo "res[0]=$res[0]\n";
-    echo "res[1]=$res[1]\n";
-    echo "res[2]=$res[2]\n";
-    $plugin_parameters[$uri][$symbol]=$res[2];
-  }
-} 
-var_dump($plugin_parameters);
-fclose($fp);
-      </xsl:processing-instruction>
-    </pre>   
-  </div>    
+  <xsl:call-template name="iterateOverPlugins"/> 
 </xsl:template> 
 
 
-<xsl:template name="iterateOverPlugins">
-  <!-- iterate over each unique plugin URI -->
-  <xsl:for-each select="
-    /rdf:RDF/rdf:Description/@rdf:about[
-      count(.. | key('descriptionsByAbout', .)[1]) = 1
-    ]
-  ">
-    <xsl:call-template name="createPluginGUI"/>
-  </xsl:for-each>
+<xsl:template name="handlePlugin">
+  <div class="pluginGUI {.}">
+    <h1>
+      <xsl:value-of select="key('descriptionsByAbout', current())/doap:name"/>
+    </h1>
+    <div class="info">
+      <xsl:apply-templates select="key('descriptionsByAbout', current())/rdfs:comment"/>
+      <xsl:apply-templates select="key('descriptionsByAbout', current())/doap:license"/>
+      <xsl:apply-templates select="key('descriptionsByAbout', current())/foaf:name"/>
+    </div>
+    <form>
+     <xsl:call-template name="iterateOverPluginParameters"/>
+    </form>
+  </div>    
 </xsl:template>
 
 
-<xsl:template name="createPluginGUI">
-<xsl:processing-instruction name="php">
-  $plugin_parameters['<xsl:value-of select="."/>'] = [];
-</xsl:processing-instruction>
-<xsl:text>
-</xsl:text>
-   <div class="pluginGUI {.}">
-      <h1>
-        <xsl:value-of select="key('descriptionsByAbout', current())/doap:name"/>
-      </h1>
-      <div class="info">
-        <xsl:apply-templates select="key('descriptionsByAbout', current())/rdfs:comment"/>
-        <xsl:apply-templates select="key('descriptionsByAbout', current())/doap:license"/>
-        <xsl:apply-templates select="key('descriptionsByAbout', current())/foaf:name"/>
-      </div>
-      <form>
-        <xsl:call-template name="iterateOverPluginParameters"/>
-      </form>
-    </div>    
-</xsl:template>
-
-
-<xsl:template name="iterateOverPluginParameters">
-  <!-- iterate over all descriptions that belong to the current plugin URI -->
-  <xsl:for-each select="key('descriptionsByAbout', current())/lv2:port/@rdf:nodeID
-  ">
-     <!-- iterate over all InputPorts that are ControlPorts -->
-     <xsl:for-each select="
-       key('descriptionsByNodeID', current())[ 
-         rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
-         and 
-         key('descriptionsByNodeID', current())[
-           rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
-         ]
-       ]/@rdf:nodeID
-     ">
-                 
-<!--FIXME     
-       <xsl:sort select="/rdf:RDF/rdf:Description[(@rdf:nodeID = current()/@rdf:nodeID) and lv2:index]/lv2:index" data-type="number" order="descending"/> 
-       <xsl:value-of select="/rdf:RDF/rdf:Description[(@rdf:nodeID = current()/@rdf:nodeID) and lv2:index]/lv2:index"/>
--->
-       <xsl:call-template name="createPluginParameterGUI"/>     
-     </xsl:for-each>
-  </xsl:for-each>
-</xsl:template>
-
-
-<xsl:template name="createPluginParameterGUI">
-<xsl:processing-instruction name="php">
-$plugin_parameters['<xsl:value-of 
-              select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()]/@rdf:about"/>']['<xsl:value-of 
-              select="key('descriptionsByNodeID', current())/lv2:symbol"/>'] = 0;
-</xsl:processing-instruction>
-<xsl:text>
-</xsl:text>
+<xsl:template name="handlePluginParameter">
   <div class="formItem">
     <label for="{current()}">
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2:name"/>
