@@ -1,48 +1,13 @@
 <?xml version="1.0"?>
 <!--
   lv2rdf2html.xsl
-  written 2017 by Jörn Nettingsmeier. This transform is in the public domain.
-  
-  Converts LV2 plugin documentation in RDF/XML format to a simple form-based 
-  HTML5/jquery-ui GUI with a PHP backend. 
-  This is meant to control plugins running embedded in a mod-host through a 
-  telnet connection, but could be adapted to other uses easily.
+  (C) 2017 by Jörn Nettingsmeier. This transform is licensed under the
+  GNU General Public License v3.
   
   This is a horrible stylesheet. That is because there is no bijective mapping
   of Turtle triplets to XML - triplets can be grouped for brevity or not. Hence,
   each and every select statement starts over from the document root. Oh the pain.
-  
-  This stylesheet has been developed and tested with RDF/XML generated in the 
-  following way:
-  
-  0. Gather URI information of available plugins:
-    #~> lv2ls
-  1. Collect plugin documentation in a Turtle file (lv2info appends to a file):
-    #~> rm output.ttl
-    #~> lv2info -p output.ttl http://gareus.org/oss/lv2/fil4#stereo
-    #~> lv2info -p output.ttl http://calf.sourceforge.net/plugins/Compressor
-        ...
-  2. Convert the turtle file to RDF/XML:
-   a. Using http://www.l3s.de/~minack/rdf2rdf/:
-    #~> java -jar rdf2rdf-1.0.1-2.3.1.jar output.ttl output.xml
-   b. Using rapper (part of raptor/Redland):
-    #~> rapper -o rdfxml -i turtle output.ttl > output2.xml
-  3. Apply this stylesheet and prettyprint:
-    #~> xsltproc lv2rdf2html.xsl output.xml | xsltproc xml-prettyprint.xsl - > output.html
-    #~> xsltproc lv2rdf2html.xsl output2.xml | xsltproc xml-prettyprint.xsl - > output2.html
-  
-  It currently tries to support all LV2 features used by the plugins listed above.
-    
-  Rdf2rdf and rapper produce different RDF/XML: rdf2r2f tries to collate
-  triplets (but does a horrible job of doing it in a consistent way), and rapper
-  does the simple, clean thing of keeping every single triplet separate. Both work
-  because the stylesheet doesn't make any assumptions about them being grouped, 
-  that's why it's soo terrible.
-  
-  There is a very clean alternative converter at http://www.easyrdf.org/converter
-  which appears to do perfect grouping, but I'm a bit wary of supporting it because
-  it requires PHP, fails to include namespace prefixes and seems to make a few risky guesses...
--->
+-->  
 
 <xsl:stylesheet version="1.0" 
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -63,310 +28,99 @@
 
 <xsl:preserve-space elements="xsl:text *"/>
 
+<xsl:include href="gui-elements.xsl"/>
+
 <xsl:key name="descriptionsByNodeID" match="rdf:Description[@rdf:nodeID]" use="@rdf:nodeID"/>
 <xsl:key name="descriptionsByAbout" match="rdf:Description[@rdf:about]" use="@rdf:about"/>
 
 
 <xsl:template name="createPluginParameterGUI">
-<xsl:text>
-</xsl:text>            
 <xsl:processing-instruction name="php">
-    
 $plugin_parameters['<xsl:value-of 
               select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()/@rdf:nodeID]/@rdf:about"/>']['<xsl:value-of 
               select="/rdf:RDF/rdf:Description[@rdf:nodeID = current()/@rdf:nodeID]/lv2:symbol"/>'] = 0;
-              
 </xsl:processing-instruction>
-            
-            <div class="formItem">
-              <label for="{current()/@rdf:nodeID}">
-                <xsl:apply-templates select="
-                  /rdf:RDF/rdf:Description[
-                    @rdf:nodeID = current()/@rdf:nodeID 
-                  ]/lv2:name
-                "/>
-                <xsl:if test="
-                     /rdf:RDF/rdf:Description[
-                       @rdf:nodeID = current()/@rdf:nodeID 
-                     ]/rdfs:comment
-                ">
-                  <xsl:text> </xsl:text>
-                  <abbr title="{
-                     /rdf:RDF/rdf:Description[
-                       @rdf:nodeID = current()/@rdf:nodeID 
-                     ]/rdfs:comment
-                  }">&#8505;</abbr>
-                </xsl:if>
-              </label>
-              <div class="input">&#8203;
-              <xsl:choose>
-
-                <!-- handle enumeration of options -->
-                <xsl:when test="
-                  /rdf:RDF/rdf:Description[
-                    @rdf:nodeID = current()/@rdf:nodeID 
-                  ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#enumeration'
-                ">
-                  <select id="{current()/@rdf:nodeID}" name="{
-                    /rdf:RDF/rdf:Description[
-                      @rdf:nodeID = current()/@rdf:nodeID 
-                    ]/lv2:symbol
-                  }">
-
-                    <!-- iterate over all descriptions belonging to the current nodeID. --> 
-                    <xsl:for-each select="
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID and lv2:scalePoint
-                      ]
-                    ">
-                      <option value="{
-                        /rdf:RDF/rdf:Description[
-                          @rdf:nodeID = current()/lv2:scalePoint/@rdf:nodeID
-                        ]/rdf:value
-                      }">
-                        <xsl:value-of select="
-                          /rdf:RDF/rdf:Description[
-                            @rdf:nodeID = current()/lv2:scalePoint/@rdf:nodeID
-                          ]/rdfs:label
-                        "/>
-                      </option>                     
-                    </xsl:for-each>
-                  </select>
-                </xsl:when>
-                
-                <!-- boolean option: checkbox -->
-                <xsl:when test="
-                  /rdf:RDF/rdf:Description[
-                    @rdf:nodeID = current()/@rdf:nodeID 
-                  ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#toggled'
-                ">
-                  <input type="checkbox" value="1"> 
-                    <xsl:if test="
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:default 
-                      and 
-                        /rdf:RDF/rdf:Description[
-                          @rdf:nodeID = current()/@rdf:nodeID 
-                        ]/lv2:default 
-                        != 0
-                    ">
-                      <xsl:attribute name="checked">checked</xsl:attribute>
-                    </xsl:if>
-                  </input>
-                </xsl:when>
-                
-                <!-- decimal value or integer  > 2: jQuery-ui slider -->
-                <xsl:when test="
-                  /rdf:RDF/rdf:Description[
-                    @rdf:nodeID = current()/@rdf:nodeID 
-                  ]/lv2:default/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#decimal'
-                  or (
-                    /rdf:RDF/rdf:Description[
-                      @rdf:nodeID = current()/@rdf:nodeID 
-                    ]/lv2:default/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#integer'
-                    and (
-                      (
-                        /rdf:RDF/rdf:Description[
-                          @rdf:nodeID = current()/@rdf:nodeID 
-                        ]/lv2:maximum
-                      - 
-                        /rdf:RDF/rdf:Description[
-                          @rdf:nodeID = current()/@rdf:nodeID 
-                        ]/lv2:minimum
-                      )
-                      > 2
-                    )
-                  )
-                ">
-                  <div class="slider" id="{current()/@rdf:nodeID}">&#8203;</div>
-                  <input 
-                    class="value" 
-                    id="{current()/@rdf:nodeID}_" 
-                    name="{
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:symbol
-                    }"
-                    value="{
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:default
-                    }"
-                    min="{
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:minimum
-                    }"
-                    max="{
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:maximum
-                    }"
-                  />
-                <xsl:choose>
-                
-                  <!-- logarithmic slider -->
-                  <xsl:when test="/rdf:RDF/rdf:Description[
-                    @rdf:nodeID = current()/@rdf:nodeID 
-                  ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/ext/port-props#logarithmic'">
-                    <script type="text/javascript">
-                      <xsl:text>
-                      $( function() {
-                        $( "#</xsl:text>
-                      <xsl:value-of select="current()/@rdf:nodeID"/>
-                      <xsl:text>" ).slider({
-                          value: round(log2lin(</xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:default"/>
-                      <xsl:text>,</xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:minimum"/>
-                      <xsl:text>,</xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:maximum"/>
-                      <xsl:text>), 2),
-                          min: 0,
-                          max: SLIDER_RESOLUTION,
-                          step: 1,
-                          slide: function(event, ui) {
-                            $("#</xsl:text>
-                      <xsl:value-of select="current()/@rdf:nodeID"/>
-                      <xsl:text>_").val(round(lin2log(ui.value,</xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:minimum"/>
-                      <xsl:text>,</xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:maximum"/>
-                      <xsl:text>), 2));
-                          }                       
-                        });
-                      });
-                      $("#</xsl:text>
-                      <xsl:value-of select="current()/@rdf:nodeID"/>
-                      <xsl:text>_").change(function () {
-                        var value = this.value;
-                        $("#</xsl:text>
-                      <xsl:value-of select="current()/@rdf:nodeID"/>
-                      <xsl:text>").slider("value", log2lin(value,</xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:minimum"/>
-                      <xsl:text>,</xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:maximum"/>
-                      <xsl:text>));
-                      });
-                      </xsl:text>
-                    </script>
-                  </xsl:when>
-                  
-                  <!-- non-logarithmic slider -->
-                  <xsl:otherwise>
-                    <script type="text/javascript">
-                      <xsl:text>
-                      $( function() {
-                        $( "#</xsl:text>
-                      <xsl:value-of select="current()/@rdf:nodeID"/>
-                      <xsl:text>" ).slider({
-                          value: </xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:default"/>
-                      <xsl:text>,
-                          min: </xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:minimum"/>
-                      <xsl:text>,
-                          max: </xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:maximum"/>
-                      <xsl:text>,
-                          step: (</xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:maximum"/>
-                      <xsl:text> - </xsl:text>
-                      <xsl:value-of select="/rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:minimum"/>
-                      <xsl:text>) / SLIDER_RESOLUTION,
-                          slide: function(event, ui) {
-                            $("#</xsl:text>
-                      <xsl:value-of select="current()/@rdf:nodeID"/>
-                      <xsl:text>_").val(ui.value);  
-                          }                       
-                        });
-                      });
-                      $("#</xsl:text>
-                      <xsl:value-of select="current()/@rdf:nodeID"/>
-                      <xsl:text>_").change(function () {
-                        var value = this.value;
-                        $("#</xsl:text>
-                      <xsl:value-of select="current()/@rdf:nodeID"/>
-                      <xsl:text>").slider("value", value);
-                      });
-                      </xsl:text>
-                    </script>
-                    </xsl:otherwise>    
-                  </xsl:choose>
-                </xsl:when>
-
-                <xsl:otherwise>
-                  <xsl:comment>lv2rdf2html: unrecognized parameter type, falling back to data entry field.</xsl:comment>
-                  <input 
-                    id="{current()/@rdf:nodeID}" 
-                    name="{
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:symbol
-                    }"
-                    value="{
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:default
-                    }"
-                    min="{
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:minimum
-                    }"
-                    max="{
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:maximum
-                    }"
-                  />  
-                  <div class="range">
-                    <xsl:value-of select=" 
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:minimum
-                    "/>
-                    <xsl:text> &lt;= x &lt;= </xsl:text>
-                    <xsl:value-of select=" 
-                      /rdf:RDF/rdf:Description[
-                        @rdf:nodeID = current()/@rdf:nodeID 
-                      ]/lv2:maximum
-                    "/>   
-                  </div>    
-                </xsl:otherwise>
-  
-                 </xsl:choose>
-                 </div>
-                 <div class="unit">&#8203;<xsl:apply-templates select="/rdf:RDF/rdf:Description[
-                     @rdf:nodeID = current()/@rdf:nodeID 
-                   ]/lv2units:unit"/>
-                 </div>
-               </div>  
+  <div class="formItem">
+    <label for="{current()/@rdf:nodeID}">
+      <xsl:apply-templates select="
+        /rdf:RDF/rdf:Description[
+          @rdf:nodeID = current()/@rdf:nodeID 
+        ]/lv2:name
+      "/>
+      <xsl:if test="
+           /rdf:RDF/rdf:Description[
+             @rdf:nodeID = current()/@rdf:nodeID 
+           ]/rdfs:comment
+      ">
+        <xsl:text> </xsl:text>
+        <abbr title="{
+           /rdf:RDF/rdf:Description[
+             @rdf:nodeID = current()/@rdf:nodeID 
+           ]/rdfs:comment
+        }">&#8505;</abbr>
+      </xsl:if>
+    </label>
+    <div class="input">&#8203;
+      <xsl:choose>
+        <!-- handle enumeration of options: dropdown -->
+        <xsl:when test="
+          /rdf:RDF/rdf:Description[
+            @rdf:nodeID = current()/@rdf:nodeID 
+          ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#enumeration'
+        ">
+          <xsl:call-template name="pluginParameterEnumeration"/>
+        </xsl:when>
+        <!-- handle boolean option: checkbox -->
+        <xsl:when test="
+          /rdf:RDF/rdf:Description[
+            @rdf:nodeID = current()/@rdf:nodeID 
+          ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#toggled'
+        ">
+          <xsl:call-template name="pluginParameterCheckbox"/>
+        </xsl:when>
+        <!-- handle decimal value: jQuery-ui slider -->
+        <xsl:when test="
+          /rdf:RDF/rdf:Description[
+            @rdf:nodeID = current()/@rdf:nodeID 
+          ]/lv2:default/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#decimal'
+        ">
+          <xsl:call-template name="pluginParameterSlider"/>
+        </xsl:when>
+        <!-- handle integer range > 2: jQuery-ui slider -->          
+        <xsl:when test="
+          /rdf:RDF/rdf:Description[
+            @rdf:nodeID = current()/@rdf:nodeID 
+          ]/lv2:default/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#integer'
+          and (
+            (
+              /rdf:RDF/rdf:Description[
+                @rdf:nodeID = current()/@rdf:nodeID 
+              ]/lv2:maximum
+            - 
+              /rdf:RDF/rdf:Description[
+                @rdf:nodeID = current()/@rdf:nodeID 
+              ]/lv2:minimum
+            )
+            > 2
+          )
+        ">
+          <xsl:call-template name="pluginParameterSlider"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:comment>lv2rdf2html: unrecognized parameter type, falling back to data entry field.</xsl:comment>
+          <xsl:call-template name="pluginParameterInput"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </div>
+    <div class="unit">
+      &#8203;
+      <xsl:apply-templates select="
+        /rdf:RDF/rdf:Description[
+          @rdf:nodeID = current()/@rdf:nodeID 
+        ]/lv2units:unit
+      "/>
+    </div>
+  </div>  
 </xsl:template>
 
 <xsl:template name="createPluginParameterList">
@@ -647,5 +401,6 @@ div.comment {
 <xsl:template match="foaf:name">
   <p>Author: <xsl:value-of select="."/></p>
 </xsl:template>
+
 
 </xsl:stylesheet>
