@@ -1,0 +1,53 @@
+/*
+  lv2rdf2html.css
+*/
+
+div {
+  border: 1px grey dotted;
+}
+div.pluginGUI {
+  display: table;
+}
+div.pluginGUI h1 {
+  display: table-row;
+}
+form { 
+  display: row-group; 
+  border-collapse: separate;
+  border-spacing: 1ex;
+  border: 1px solid;
+}
+div.formItem { 
+  display: table-row;
+}
+label { 
+  display: table-cell; 
+  width: 12em;
+}
+div.input {
+  display: table-cell;
+}
+div.slider {
+  display: inline-block;
+  width: 11em;
+}
+input.value, div.range {
+  width: 11ex;
+  max-width: 11ex;
+  text-align: right;
+  margin-left: 1ex;
+  display: inline-block;
+}
+div.range {
+  font-size: 60%;
+  font-weight: bold;
+}
+div.unit {
+  display: table-cell;
+  width: 6em;
+}
+div.comment {
+  display: table-cell;
+  font-style: italic;
+  width: auto;
+}

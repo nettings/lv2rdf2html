@@ -23,9 +23,7 @@
 
 	exclude-result-prefixes="xsl doap foaf lv2 lv2units atom owl rdf rdfs xsd"
 >
-
 <xsl:output method="xml" omit-xml-declaration="yes"/>
-
 <xsl:preserve-space elements="xsl:text *"/>
 
 <xsl:include href="gui-elements.xsl"/>
@@ -33,138 +31,7 @@
 <xsl:key name="descriptionsByNodeID" match="rdf:Description[@rdf:nodeID]" use="@rdf:nodeID"/>
 <xsl:key name="descriptionsByAbout" match="rdf:Description[@rdf:about]" use="@rdf:about"/>
 
-
-<xsl:template name="createPluginParameterGUI">
-<xsl:processing-instruction name="php">
-$plugin_parameters['<xsl:value-of 
-              select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()/@rdf:nodeID]/@rdf:about"/>']['<xsl:value-of 
-              select="/rdf:RDF/rdf:Description[@rdf:nodeID = current()/@rdf:nodeID]/lv2:symbol"/>'] = 0;
-</xsl:processing-instruction>
-  <div class="formItem">
-    <label for="{current()/@rdf:nodeID}">
-      <xsl:apply-templates select="
-        /rdf:RDF/rdf:Description[
-          @rdf:nodeID = current()/@rdf:nodeID 
-        ]/lv2:name
-      "/>
-      <xsl:if test="
-           /rdf:RDF/rdf:Description[
-             @rdf:nodeID = current()/@rdf:nodeID 
-           ]/rdfs:comment
-      ">
-        <xsl:text> </xsl:text>
-        <abbr title="{
-           /rdf:RDF/rdf:Description[
-             @rdf:nodeID = current()/@rdf:nodeID 
-           ]/rdfs:comment
-        }">&#8505;</abbr>
-      </xsl:if>
-    </label>
-    <div class="input">&#8203;
-      <xsl:choose>
-        <!-- handle enumeration of options: dropdown -->
-        <xsl:when test="
-          /rdf:RDF/rdf:Description[
-            @rdf:nodeID = current()/@rdf:nodeID 
-          ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#enumeration'
-        ">
-          <xsl:call-template name="pluginParameterEnumeration"/>
-        </xsl:when>
-        <!-- handle boolean option: checkbox -->
-        <xsl:when test="
-          /rdf:RDF/rdf:Description[
-            @rdf:nodeID = current()/@rdf:nodeID 
-          ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#toggled'
-        ">
-          <xsl:call-template name="pluginParameterCheckbox"/>
-        </xsl:when>
-        <!-- handle decimal value: jQuery-ui slider -->
-        <xsl:when test="
-          /rdf:RDF/rdf:Description[
-            @rdf:nodeID = current()/@rdf:nodeID 
-          ]/lv2:default/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#decimal'
-        ">
-          <xsl:call-template name="pluginParameterSlider"/>
-        </xsl:when>
-        <!-- handle integer range > 2: jQuery-ui slider -->          
-        <xsl:when test="
-          /rdf:RDF/rdf:Description[
-            @rdf:nodeID = current()/@rdf:nodeID 
-          ]/lv2:default/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#integer'
-          and (
-            (
-              /rdf:RDF/rdf:Description[
-                @rdf:nodeID = current()/@rdf:nodeID 
-              ]/lv2:maximum
-            - 
-              /rdf:RDF/rdf:Description[
-                @rdf:nodeID = current()/@rdf:nodeID 
-              ]/lv2:minimum
-            )
-            > 2
-          )
-        ">
-          <xsl:call-template name="pluginParameterSlider"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:comment>lv2rdf2html: unrecognized parameter type, falling back to data entry field.</xsl:comment>
-          <xsl:call-template name="pluginParameterInput"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </div>
-    <div class="unit">
-      &#8203;
-      <xsl:apply-templates select="
-        /rdf:RDF/rdf:Description[
-          @rdf:nodeID = current()/@rdf:nodeID 
-        ]/lv2units:unit
-      "/>
-    </div>
-  </div>  
-</xsl:template>
-
-<xsl:template name="createPluginParameterList">
-</xsl:template>
-
-<xsl:template name="createPluginGUI">
-<xsl:processing-instruction name="php">$plugin_parameters['<xsl:value-of select="@rdf:about"/>'] = [];</xsl:processing-instruction>
-   <div class="pluginGUI {@rdf:about}">
-      <h1>
-        <xsl:value-of select="
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/doap:name
-        "/>
-      </h1>
-      <div class="info">
-        <xsl:apply-templates select="
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/rdfs:comment
-        "/>
-        <xsl:apply-templates select="  
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/doap:license
-        "/>
-        <xsl:apply-templates select="  
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/foaf:name
-        "/>
-      </div>
-      <form>
-        <xsl:call-template name="iterateOverPluginParameters"/>
-      </form>
-    </div>    
-</xsl:template>
-
-<xsl:template name="createPluginList">
-</xsl:template>
-
 <xsl:template match="/">
-
-
 <xsl:processing-instruction name="php">
 <![CDATA[
 define("HOST", "192.168.1.21");
@@ -182,91 +49,14 @@ if (!$fp) {
 $plugin_parameters = array();
 ]]>
 </xsl:processing-instruction>
-
-
 <html>
   <head>
     <meta charset="utf-8"/>
     <script src="https://code.jquery.com/jquery-3.2.1.js">&#8203;</script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">&#8203;</script>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
-    <script type="text/javascript">
-
-const SLIDER_RESOLUTION=1024;
-
-function round(value, decimals) {
-  var f = Math.pow(10, decimals);
-  return Math.round(value * f)/f;
-}
-    
-function lin2log(value, min, max) {
-  var minval = Math.log(min);
-  var maxval = Math.log(max);
-  var ratio = (maxval - minval) / (SLIDER_RESOLUTION);
-  return Math.exp(minval + ratio * value);
-}
-   
-function log2lin(value, min, max) {
-  var minval = Math.log(min);
-  var maxval = Math.log(max);
-  var ratio = (maxval - minval) / (SLIDER_RESOLUTION);
-  return (Math.log(value) - minval) / ratio;
-}
-  
-    </script>
-    <style type="text/css">
-      <xsl:text>
-div {
-  border: 1px grey dotted;
-}
-div.pluginGUI {
-  display: table;
-}
-div.pluginGUI h1 {
-  display: table-row;
-}
-form { 
-  display: row-group; 
-  border-collapse: separate;
-  border-spacing: 1ex;
-  border: 1px solid;
-}
-div.formItem { 
-  display: table-row;
-}
-label { 
-  display: table-cell; 
-  width: 12em;
-}
-div.input {
-  display: table-cell;
-}
-div.slider {
-  display: inline-block;
-  width: 11em;
-}
-input.value, div.range {
-  width: 11ex;
-  max-width: 11ex;
-  text-align: right;
-  margin-left: 1ex;
-  display: inline-block;
-}
-div.range {
-  font-size: 60%;
-  font-weight: bold;
-}
-div.unit {
-  display: table-cell;
-  width: 6em;
-}
-div.comment {
-  display: table-cell;
-  font-style: italic;
-  width: auto;
-}
-      </xsl:text>
-    </style>
+    <script type="text/javascript" href="lv2rdf2html.js">&#8203;</script>
+    <link rel="stylesheet" href="lv2rdf2html.css" />
   </head>
   <body>
 <xsl:processing-instruction name="php">echo "<h1>$usermsg</h1>";</xsl:processing-instruction>
@@ -402,5 +192,133 @@ div.comment {
   <p>Author: <xsl:value-of select="."/></p>
 </xsl:template>
 
+
+<xsl:template name="createPluginParameterGUI">
+<xsl:processing-instruction name="php">
+$plugin_parameters['<xsl:value-of 
+              select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()/@rdf:nodeID]/@rdf:about"/>']['<xsl:value-of 
+              select="/rdf:RDF/rdf:Description[@rdf:nodeID = current()/@rdf:nodeID]/lv2:symbol"/>'] = 0;
+</xsl:processing-instruction>
+  <div class="formItem">
+    <label for="{current()/@rdf:nodeID}">
+      <xsl:apply-templates select="
+        /rdf:RDF/rdf:Description[
+          @rdf:nodeID = current()/@rdf:nodeID 
+        ]/lv2:name
+      "/>
+      <xsl:if test="
+           /rdf:RDF/rdf:Description[
+             @rdf:nodeID = current()/@rdf:nodeID 
+           ]/rdfs:comment
+      ">
+        <xsl:text> </xsl:text>
+        <abbr title="{
+           /rdf:RDF/rdf:Description[
+             @rdf:nodeID = current()/@rdf:nodeID 
+           ]/rdfs:comment
+        }">&#8505;</abbr>
+      </xsl:if>
+    </label>
+    <div class="input">&#8203;
+      <xsl:choose>
+        <!-- handle enumeration of options: dropdown -->
+        <xsl:when test="
+          /rdf:RDF/rdf:Description[
+            @rdf:nodeID = current()/@rdf:nodeID 
+          ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#enumeration'
+        ">
+          <xsl:call-template name="pluginParameterEnumeration"/>
+        </xsl:when>
+        <!-- handle boolean option: checkbox -->
+        <xsl:when test="
+          /rdf:RDF/rdf:Description[
+            @rdf:nodeID = current()/@rdf:nodeID 
+          ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#toggled'
+        ">
+          <xsl:call-template name="pluginParameterCheckbox"/>
+        </xsl:when>
+        <!-- handle decimal value: jQuery-ui slider -->
+        <xsl:when test="
+          /rdf:RDF/rdf:Description[
+            @rdf:nodeID = current()/@rdf:nodeID 
+          ]/lv2:default/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#decimal'
+        ">
+          <xsl:call-template name="pluginParameterSlider"/>
+        </xsl:when>
+        <!-- handle integer range > 2: jQuery-ui slider -->          
+        <xsl:when test="
+          /rdf:RDF/rdf:Description[
+            @rdf:nodeID = current()/@rdf:nodeID 
+          ]/lv2:default/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#integer'
+          and (
+            (
+              /rdf:RDF/rdf:Description[
+                @rdf:nodeID = current()/@rdf:nodeID 
+              ]/lv2:maximum
+            - 
+              /rdf:RDF/rdf:Description[
+                @rdf:nodeID = current()/@rdf:nodeID 
+              ]/lv2:minimum
+            )
+            > 2
+          )
+        ">
+          <xsl:call-template name="pluginParameterSlider"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:comment>lv2rdf2html: unrecognized parameter type, falling back to data entry field.</xsl:comment>
+          <xsl:call-template name="pluginParameterInput"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </div>
+    <div class="unit">
+      &#8203;
+      <xsl:apply-templates select="
+        /rdf:RDF/rdf:Description[
+          @rdf:nodeID = current()/@rdf:nodeID 
+        ]/lv2units:unit
+      "/>
+    </div>
+  </div>  
+</xsl:template>
+
+<xsl:template name="createPluginParameterList">
+</xsl:template>
+
+<xsl:template name="createPluginGUI">
+<xsl:processing-instruction name="php">$plugin_parameters['<xsl:value-of select="@rdf:about"/>'] = [];</xsl:processing-instruction>
+   <div class="pluginGUI {@rdf:about}">
+      <h1>
+        <xsl:value-of select="
+          /rdf:RDF/rdf:Description[
+            @rdf:about = current()/@rdf:about
+          ]/doap:name
+        "/>
+      </h1>
+      <div class="info">
+        <xsl:apply-templates select="
+          /rdf:RDF/rdf:Description[
+            @rdf:about = current()/@rdf:about
+          ]/rdfs:comment
+        "/>
+        <xsl:apply-templates select="  
+          /rdf:RDF/rdf:Description[
+            @rdf:about = current()/@rdf:about
+          ]/doap:license
+        "/>
+        <xsl:apply-templates select="  
+          /rdf:RDF/rdf:Description[
+            @rdf:about = current()/@rdf:about
+          ]/foaf:name
+        "/>
+      </div>
+      <form>
+        <xsl:call-template name="iterateOverPluginParameters"/>
+      </form>
+    </div>    
+</xsl:template>
+
+<xsl:template name="createPluginList">
+</xsl:template>
 
 </xsl:stylesheet>
