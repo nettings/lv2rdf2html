@@ -100,9 +100,8 @@ fclose($fp);
 <xsl:template name="iterateOverPlugins">
   <!-- iterate over each unique plugin URI -->
   <xsl:for-each select="
-    /rdf:RDF/rdf:Description[
-      @rdf:about 
-      and count(. | key('descriptionsByAbout', @rdf:about)[1]) = 1
+    /rdf:RDF/rdf:Description/@rdf:about[
+      count(.. | key('descriptionsByAbout', .)[1]) = 1
     ]
   ">
     <xsl:call-template name="createPluginGUI"/>
@@ -112,7 +111,7 @@ fclose($fp);
 
 <xsl:template name="iterateOverPluginParameters">
   <!-- iterate over all descriptions that belong to the current plugin URI -->
-  <xsl:for-each select="key('descriptionsByAbout', current()/@rdf:about)/lv2:port/@rdf:nodeID
+  <xsl:for-each select="key('descriptionsByAbout', current())/lv2:port/@rdf:nodeID
   ">
      <!-- iterate over all InputPorts that are ControlPorts -->
      <xsl:for-each select="
@@ -139,63 +138,44 @@ fclose($fp);
   <xsl:processing-instruction name="php">
 $plugin_parameters['<xsl:value-of 
               select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()]/@rdf:about"/>']['<xsl:value-of 
-              select="/rdf:RDF/rdf:Description[@rdf:nodeID = current()]/lv2:symbol"/>'] = 0;
+              select="key('descriptionsByNodeID', current())/lv2:symbol"/>'] = 0;
   </xsl:processing-instruction>
   <div class="formItem">
     <label for="{current()}">
-      <xsl:apply-templates select="
-        /rdf:RDF/rdf:Description[
-          @rdf:nodeID = current() 
-        ]/lv2:name
-      "/>
-      <xsl:apply-templates select="
-        /rdf:RDF/rdf:Description[
-          @rdf:nodeID = current()
-        ]/rdfs:comment
-      "/>
+      <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2:name"/>
+      <xsl:apply-templates select="key('descriptionsByNodeID', current())/rdfs:comment"/>
     </label>
     <div class="input">&#8203;
       <xsl:choose>
         <!-- handle enumeration of options: dropdown -->
         <xsl:when test="
-          /rdf:RDF/rdf:Description[
-            @rdf:nodeID = current() 
-          ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#enumeration'
+          key('descriptionsByNodeID', current())/lv2:portProperty/@rdf:resource 
+          = 'http://lv2plug.in/ns/lv2core#enumeration'
         ">
           <xsl:call-template name="pluginParameterEnumeration"/>
         </xsl:when>
         <!-- handle boolean option: checkbox -->
         <xsl:when test="
-          /rdf:RDF/rdf:Description[
-            @rdf:nodeID = current() 
-          ]/lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#toggled'
+          key('descriptionsByNodeID', current())/lv2:portProperty/@rdf:resource 
+          = 'http://lv2plug.in/ns/lv2core#toggled'
         ">
           <xsl:call-template name="pluginParameterCheckbox"/>
         </xsl:when>
         <!-- handle decimal value: jQuery-ui slider -->
         <xsl:when test="
-          /rdf:RDF/rdf:Description[
-            @rdf:nodeID = current() 
-          ]/lv2:default/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#decimal'
+          key('descriptionsByNodeID', current())/lv2:default/@rdf:datatype 
+          = 'http://www.w3.org/2001/XMLSchema#decimal'
         ">
           <xsl:call-template name="pluginParameterSlider"/>
         </xsl:when>
         <!-- handle integer range > 2: jQuery-ui slider -->          
         <xsl:when test="
-          /rdf:RDF/rdf:Description[
-            @rdf:nodeID = current() 
-          ]/lv2:default/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#integer'
+          key('descriptionsByNodeID', current())/lv2:default/@rdf:datatype 
+          = 'http://www.w3.org/2001/XMLSchema#integer'
           and (
-            (
-              /rdf:RDF/rdf:Description[
-                @rdf:nodeID = current() 
-              ]/lv2:maximum
-            - 
-              /rdf:RDF/rdf:Description[
-                @rdf:nodeID = current() 
-              ]/lv2:minimum
-            )
-            > 2
+            ( key('descriptionsByNodeID', current())/lv2:maximum
+              - key('descriptionsByNodeID', current())/lv2:minimum
+            ) > 2
           )
         ">
           <xsl:call-template name="pluginParameterSlider"/>
@@ -208,11 +188,7 @@ $plugin_parameters['<xsl:value-of
     </div>
     <div class="unit">
       &#8203;
-      <xsl:apply-templates select="
-        /rdf:RDF/rdf:Description[
-          @rdf:nodeID = current() 
-        ]/lv2units:unit
-      "/>
+      <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2units:unit"/>
     </div>
   </div>  
 </xsl:template>
@@ -223,31 +199,15 @@ $plugin_parameters['<xsl:value-of
 
 
 <xsl:template name="createPluginGUI">
-<xsl:processing-instruction name="php">$plugin_parameters['<xsl:value-of select="@rdf:about"/>'] = [];</xsl:processing-instruction>
-   <div class="pluginGUI {@rdf:about}">
+<xsl:processing-instruction name="php">$plugin_parameters['<xsl:value-of select="."/>'] = [];</xsl:processing-instruction>
+   <div class="pluginGUI {.}">
       <h1>
-        <xsl:value-of select="
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/doap:name
-        "/>
+        <xsl:value-of select="key('descriptionsByAbout', current())/doap:name"/>
       </h1>
       <div class="info">
-        <xsl:apply-templates select="
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/rdfs:comment
-        "/>
-        <xsl:apply-templates select="  
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/doap:license
-        "/>
-        <xsl:apply-templates select="  
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/foaf:name
-        "/>
+        <xsl:apply-templates select="key('descriptionsByAbout', current())/rdfs:comment"/>
+        <xsl:apply-templates select="key('descriptionsByAbout', current())/doap:license"/>
+        <xsl:apply-templates select="key('descriptionsByAbout', current())/foaf:name"/>
       </div>
       <form>
         <xsl:call-template name="iterateOverPluginParameters"/>
