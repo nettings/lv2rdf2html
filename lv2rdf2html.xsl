@@ -66,196 +66,8 @@
 <xsl:key name="descriptionsByNodeID" match="rdf:Description[@rdf:nodeID]" use="@rdf:nodeID"/>
 <xsl:key name="descriptionsByAbout" match="rdf:Description[@rdf:about]" use="@rdf:about"/>
 
-<xsl:template match="/">
 
-
-<xsl:processing-instruction name="php">
-<![CDATA[
-define("HOST", "192.168.1.21");
-define("PORT", 5555);
-define("TIMEOUT", 3);
-$errno = 0; 
-$errmsg = '';
-$usermsg = ''; 
-
-$fp = fsockopen(HOST, PORT, $errno, $errmsg, 3);
-stream_set_timeout($fp, TIMEOUT);
-if (!$fp) {
-  $usermsg = "Could not connect to mod-host at ".HOST.":".PORT." within a timeout of ".TIMEOUT." seconds. ERRNO='".$errno."', ERRMSG='".$errmsg."'.";
-}
-$plugin_parameters = array();
-]]>
-</xsl:processing-instruction>
-
-
-<html>
-  <head>
-    <meta charset="utf-8"/>
-    <script src="https://code.jquery.com/jquery-3.2.1.js">&#8203;</script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">&#8203;</script>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
-    <script type="text/javascript">
-
-const SLIDER_RESOLUTION=1024;
-
-function round(value, decimals) {
-  var f = Math.pow(10, decimals);
-  return Math.round(value * f)/f;
-}
-    
-function lin2log(value, min, max) {
-  var minval = Math.log(min);
-  var maxval = Math.log(max);
-  var ratio = (maxval - minval) / (SLIDER_RESOLUTION);
-  return Math.exp(minval + ratio * value);
-}
-   
-function log2lin(value, min, max) {
-  var minval = Math.log(min);
-  var maxval = Math.log(max);
-  var ratio = (maxval - minval) / (SLIDER_RESOLUTION);
-  return (Math.log(value) - minval) / ratio;
-}
-  
-    </script>
-    <style type="text/css">
-      <xsl:text>
-div {
-  border: 1px grey dotted;
-}
-div.pluginGUI {
-  display: table;
-}
-div.pluginGUI h1 {
-  display: table-row;
-}
-form { 
-  display: row-group; 
-  border-collapse: separate;
-  border-spacing: 1ex;
-  border: 1px solid;
-}
-div.formItem { 
-  display: table-row;
-}
-label { 
-  display: table-cell; 
-  width: 12em;
-}
-div.input {
-  display: table-cell;
-}
-div.slider {
-  display: inline-block;
-  width: 11em;
-}
-input.value, div.range {
-  width: 11ex;
-  max-width: 11ex;
-  text-align: right;
-  margin-left: 1ex;
-  display: inline-block;
-}
-div.range {
-  font-size: 60%;
-  font-weight: bold;
-}
-div.unit {
-  display: table-cell;
-  width: 6em;
-}
-div.comment {
-  display: table-cell;
-  font-style: italic;
-  width: auto;
-}
-      </xsl:text>
-    </style>
-  </head>
-  <body>
-<xsl:processing-instruction name="php">echo "<h1>$usermsg</h1>";</xsl:processing-instruction>
-    <div>
-      <xsl:apply-templates/>
-    </div>
-  </body>
-</html>
-</xsl:template>
-
-<xsl:template match="/rdf:RDF">
-  <!-- iterate over each unique plugin URI -->
-  <xsl:for-each select="
-    /rdf:RDF/rdf:Description[
-      @rdf:about 
-      and count(. | key('descriptionsByAbout', @rdf:about)[1]) = 1
-    ]
-  ">
-
-<xsl:text>
-</xsl:text>
-<xsl:processing-instruction name="php">
-    
-$plugin_parameters['<xsl:value-of select="@rdf:about"/>'] = []; 
-
-</xsl:processing-instruction>
-
-
-    <div class="pluginGUI {@rdf:about}">
-      <h1>
-        <xsl:value-of select="
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/doap:name
-        "/>
-      </h1>
-      <div class="info">
-        <xsl:apply-templates select="
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/rdfs:comment
-        "/>
-        <xsl:apply-templates select="  
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/doap:license
-        "/>
-        <xsl:apply-templates select="  
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]/foaf:name
-        "/>
-      </div>
-      <form>
-
-        <!-- iterate over all descriptions that belong to the current plugin URI -->
-        <xsl:for-each select="
-          /rdf:RDF/rdf:Description[
-            @rdf:about = current()/@rdf:about
-          ]
-        ">
-
-          <!-- iterate over all unique descriptions of this nodeID 
-               for which exist InputPort and ControlPort resources -->
-          <xsl:for-each select="
-            /rdf:RDF/rdf:Description[
-              @rdf:nodeID = current()/lv2:port/@rdf:nodeID 
-              and 
-                /rdf:RDF/rdf:Description[
-                  @rdf:nodeID = current()/lv2:port/@rdf:nodeID
-                ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
-              and 
-                /rdf:RDF/rdf:Description[
-                  @rdf:nodeID = current()/lv2:port/@rdf:nodeID
-                ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
-              and 
-                count(. | key('descriptionsByNodeID', current()/lv2:port/@rdf:nodeID)[1]) = 1
-            ]
-          ">
-            <xsl:sort select="
-              /rdf:RDF/rdf:Description[
-                @rdf:nodeID = current()/lv2:port/@rdf:nodeID 
-              ]/lv2:index"
-              data-type="number" 
-            />
+<xsl:template name="createPluginParameterGUI">
 <xsl:text>
 </xsl:text>            
 <xsl:processing-instruction name="php">
@@ -555,22 +367,217 @@ $plugin_parameters['<xsl:value-of
                    ]/lv2units:unit"/>
                  </div>
                </div>  
-               
-            </xsl:for-each>
-  
-          </xsl:for-each>
-        
-        </form>
+</xsl:template>
+
+<xsl:template name="createPluginParameterList">
+</xsl:template>
+
+<xsl:template name="createPluginGUI">
+<xsl:processing-instruction name="php">$plugin_parameters['<xsl:value-of select="@rdf:about"/>'] = [];</xsl:processing-instruction>
+   <div class="pluginGUI {@rdf:about}">
+      <h1>
+        <xsl:value-of select="
+          /rdf:RDF/rdf:Description[
+            @rdf:about = current()/@rdf:about
+          ]/doap:name
+        "/>
+      </h1>
+      <div class="info">
+        <xsl:apply-templates select="
+          /rdf:RDF/rdf:Description[
+            @rdf:about = current()/@rdf:about
+          ]/rdfs:comment
+        "/>
+        <xsl:apply-templates select="  
+          /rdf:RDF/rdf:Description[
+            @rdf:about = current()/@rdf:about
+          ]/doap:license
+        "/>
+        <xsl:apply-templates select="  
+          /rdf:RDF/rdf:Description[
+            @rdf:about = current()/@rdf:about
+          ]/foaf:name
+        "/>
       </div>
+      <form>
+        <xsl:call-template name="iterateOverPluginParameters"/>
+      </form>
+    </div>    
+</xsl:template>
+
+<xsl:template name="createPluginList">
+</xsl:template>
+
+<xsl:template match="/">
+
+
+<xsl:processing-instruction name="php">
+<![CDATA[
+define("HOST", "192.168.1.21");
+define("PORT", 5555);
+define("TIMEOUT", 3);
+$errno = 0; 
+$errmsg = '';
+$usermsg = ''; 
+
+$fp = fsockopen(HOST, PORT, $errno, $errmsg, 3);
+stream_set_timeout($fp, TIMEOUT);
+if (!$fp) {
+  $usermsg = "Could not connect to mod-host at ".HOST.":".PORT." within a timeout of ".TIMEOUT." seconds. ERRNO='".$errno."', ERRMSG='".$errmsg."'.";
+}
+$plugin_parameters = array();
+]]>
+</xsl:processing-instruction>
+
+
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <script src="https://code.jquery.com/jquery-3.2.1.js">&#8203;</script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">&#8203;</script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    <script type="text/javascript">
+
+const SLIDER_RESOLUTION=1024;
+
+function round(value, decimals) {
+  var f = Math.pow(10, decimals);
+  return Math.round(value * f)/f;
+}
     
-    </xsl:for-each>
-    <div class="debug">
-      <pre>
+function lin2log(value, min, max) {
+  var minval = Math.log(min);
+  var maxval = Math.log(max);
+  var ratio = (maxval - minval) / (SLIDER_RESOLUTION);
+  return Math.exp(minval + ratio * value);
+}
+   
+function log2lin(value, min, max) {
+  var minval = Math.log(min);
+  var maxval = Math.log(max);
+  var ratio = (maxval - minval) / (SLIDER_RESOLUTION);
+  return (Math.log(value) - minval) / ratio;
+}
+  
+    </script>
+    <style type="text/css">
+      <xsl:text>
+div {
+  border: 1px grey dotted;
+}
+div.pluginGUI {
+  display: table;
+}
+div.pluginGUI h1 {
+  display: table-row;
+}
+form { 
+  display: row-group; 
+  border-collapse: separate;
+  border-spacing: 1ex;
+  border: 1px solid;
+}
+div.formItem { 
+  display: table-row;
+}
+label { 
+  display: table-cell; 
+  width: 12em;
+}
+div.input {
+  display: table-cell;
+}
+div.slider {
+  display: inline-block;
+  width: 11em;
+}
+input.value, div.range {
+  width: 11ex;
+  max-width: 11ex;
+  text-align: right;
+  margin-left: 1ex;
+  display: inline-block;
+}
+div.range {
+  font-size: 60%;
+  font-weight: bold;
+}
+div.unit {
+  display: table-cell;
+  width: 6em;
+}
+div.comment {
+  display: table-cell;
+  font-style: italic;
+  width: auto;
+}
+      </xsl:text>
+    </style>
+  </head>
+  <body>
+<xsl:processing-instruction name="php">echo "<h1>$usermsg</h1>";</xsl:processing-instruction>
+    <div>
+      <xsl:apply-templates/>
+    </div>
+  </body>
+</html>
+</xsl:template>
+
+<xsl:template name="iterateOverPlugins">
+  <!-- iterate over each unique plugin URI -->
+  <xsl:for-each select="
+    /rdf:RDF/rdf:Description[
+      @rdf:about 
+      and count(. | key('descriptionsByAbout', @rdf:about)[1]) = 1
+    ]
+  ">
+    <xsl:call-template name="createPluginGUI"/>
+  </xsl:for-each>
+</xsl:template>
+
+
+<xsl:template name="iterateOverPluginParameters">
+  <!-- iterate over all descriptions that belong to the current plugin URI -->
+  <xsl:for-each select="
+    /rdf:RDF/rdf:Description[
+      @rdf:about = current()/@rdf:about
+    ]
+  ">
+     <!-- iterate over all unique descriptions of this nodeID 
+          for which exist InputPort and ControlPort resources -->
+     <xsl:for-each select="
+       /rdf:RDF/rdf:Description[
+         @rdf:nodeID = current()/lv2:port/@rdf:nodeID 
+         and 
+         /rdf:RDF/rdf:Description[
+           @rdf:nodeID = current()/lv2:port/@rdf:nodeID
+         ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
+         and 
+         /rdf:RDF/rdf:Description[
+           @rdf:nodeID = current()/lv2:port/@rdf:nodeID
+         ]/rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
+         and 
+         count(. | key('descriptionsByNodeID', current()/lv2:port/@rdf:nodeID)[1]) = 1
+       ]
+     ">
+        <xsl:sort select="
+          /rdf:RDF/rdf:Description[
+            @rdf:nodeID = current()/lv2:port/@rdf:nodeID 
+          ]/lv2:index"
+          data-type="number" 
+        />
+       <xsl:call-template name="createPluginParameterGUI"/>
+     </xsl:for-each>
+  </xsl:for-each>
+</xsl:template>
+
+<xsl:template match="/rdf:RDF">
+  <xsl:call-template name="iterateOverPlugins"/>
+  <div class="debug">
+    <pre>
 
 <xsl:text>
 </xsl:text>
-
-
 <xsl:processing-instruction name="php"> 
 
    $i=0;
@@ -599,8 +606,8 @@ $plugin_parameters['<xsl:value-of
 
 </xsl:processing-instruction>
 
-      </pre>   
-    </div>    
+    </pre>   
+  </div>    
 </xsl:template> 
 
 <xsl:template match="lv2units:unit">
