@@ -47,10 +47,10 @@
 
 
 <xsl:template name="pluginParameterSlider">
-  <div class="slider" id="{current()}">&#8203;</div>
+  <div class="slider" id="{current()}_">&#8203;</div>
   <input 
     class="value" 
-    id="{current()}_" 
+    id="{current()}" 
     name="{key('descriptionsByNodeID', current())/lv2:symbol}"
     value="{key('descriptionsByNodeID', current())/lv2:default}"
     min="{key('descriptionsByNodeID', current())/lv2:minimum}"
@@ -74,89 +74,66 @@
 
 <xsl:template name="pluginParameterSliderLog">
   <script type="text/javascript">
-    <xsl:text>
 $( function() {
-  $( "#</xsl:text>
-    <xsl:value-of select="current()"/>
-    <xsl:text>" ).slider({
-    value: round(log2lin(</xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>
-    <xsl:text>,</xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
-    <xsl:text>,</xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
-    <xsl:text>), 2),
+  $( "#<xsl:value-of select="current()"/>_" ).slider({
+    value: round(log2lin(<xsl:value-of 
+      select="key('descriptionsByNodeID', current())/lv2:default"/>, <xsl:value-of 
+      select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of
+      select="key('descriptionsByNodeID', current())/lv2:maximum"/>), 2),
     min: 0,
     max: SLIDER_RESOLUTION,
     step: 1,
-    slide: function(event, ui) {
-      $("#</xsl:text>
-    <xsl:value-of select="current()"/>
-    <xsl:text>_").val(round(lin2log(ui.value,</xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
-    <xsl:text>,</xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
-    <xsl:text>), 2));
-    }                       
+    stop: function(event, ui) {
+      var value = lin2log(ui.value, <xsl:value-of
+        select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of 
+        select="key('descriptionsByNodeID', current())/lv2:maximum"/>);
+      $("#<xsl:value-of
+        select="current()"/>").val(round(value, 2));
+      <xsl:call-template name="setPluginDataFunc"/>               
+    }        
   });
 });
-$("#</xsl:text>
-    <xsl:value-of select="current()"/>
-    <xsl:text>_").change(function () {
+$("#<xsl:value-of select="current()"/>").change(function () {
   var value = this.value;
-  $("#</xsl:text>
-    <xsl:value-of select="current()"/>
-    <xsl:text>").slider("value", log2lin(value,</xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
-    <xsl:text>,</xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
-    <xsl:text>));
+  $("#<xsl:value-of
+    select="current()"/>_").slider("value", log2lin(value, <xsl:value-of 
+    select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of
+    select="key('descriptionsByNodeID', current())/lv2:maximum"/>));
+  <xsl:call-template name="setPluginDataFunc"/>
 });
-    </xsl:text>
   </script>
 </xsl:template>
 
 
 <xsl:template name="pluginParameterSliderLin">
   <script type="text/javascript">
-    <xsl:text>
 $( function() {
-  $( "#</xsl:text>
-    <xsl:value-of select="current()"/>
-    <xsl:text>" ).slider({
-    value: </xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>
-    <xsl:text>,
-    min: </xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
-    <xsl:text>,
-    max: </xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
-    <xsl:text>,
-    step: (</xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
-    <xsl:text> - </xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
-    <xsl:text>) / SLIDER_RESOLUTION,
-    slide: function(event, ui) {
-      $("#</xsl:text>
-    <xsl:value-of select="current()"/>
-    <xsl:text>_").val(ui.value);  
+  $( "#<xsl:value-of select="current()"/>_" ).slider({
+    value: <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>,
+    min:   <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>,
+    max:   <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>,
+    step:  (<xsl:value-of 
+      select="key('descriptionsByNodeID', current())/lv2:maximum"/> - <xsl:value-of 
+      select="key('descriptionsByNodeID', current())/lv2:minimum"/>) / SLIDER_RESOLUTION,
+    stop: function(event, ui) {
+      var value = ui.value;
+      $("#<xsl:value-of select="current()"/>").val(value);
+    <xsl:call-template name="setPluginDataFunc"/>
     }                       
   });
 });
-$("#</xsl:text>
-    <xsl:value-of select="current()"/>
-    <xsl:text>_").change(function () {
+$( "#<xsl:value-of select="current()"/>" ).change(function () {
   var value = this.value;
-  $("#</xsl:text>
-    <xsl:value-of select="current()"/>
-    <xsl:text>").slider("value", value);
+  $( "#<xsl:value-of select="current()"/>_" ).slider("value", value);
+  <xsl:call-template name="setPluginDataFunc"/>
 });
-    </xsl:text>
   </script>
 </xsl:template>
 
+
+<xsl:template name="setPluginDataFunc">
+    setPluginData( "<xsl:value-of select="current()"/>", value );
+</xsl:template>
 
 <xsl:template name="pluginParameterInput">
   <input 

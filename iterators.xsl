@@ -56,7 +56,7 @@
        <xsl:value-of select="."/>
 -->   
        
-       <xsl:call-template name="handlePluginParameter"/>     
+       <xsl:call-template name="handlePluginParameter"/>  
      </xsl:for-each>
   </xsl:for-each>
 </xsl:template>

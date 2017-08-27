@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <!--
-  lv2rdf2html.xsl
+  lv2rdf2php.xsl
   (C) 2017 by Jörn Nettingsmeier. This transform is licensed under the
   GNU General Public License v3.
   
   This is a horrible stylesheet. That is because there is no bijective mapping
   of Turtle triplets to XML - triplets can be grouped for brevity or not. Hence,
-  each and every select statement starts over from the document root. Oh the pain.
+  each and every select statement starts over from the document root and matches via
+  ID attributes. Oh the pain.
 -->  
 
 <xsl:stylesheet version="1.0" 
@@ -34,36 +35,55 @@
 
 
 <xsl:template match="/">
+
   <xsl:processing-instruction name="php">
-    <xsl:text>
 define("HOST", "192.168.1.21");
 define("PORT", 5555);
 $fp = fsockopen(HOST, PORT);
-$plugin_parameters = array(); 
-$i=0;
-</xsl:text>
+$req = "";
+$res = "";
+$nodeIDs = array(); 
+$instance = 0;
+
     <xsl:apply-templates/>
-    <xsl:text>
-foreach ($plugin_parameters as $uri => $params) {
-  $i++;
-  foreach ($params as $symbol => $value) {
-    echo "$uri -> $symbol = $value\n";
-    $req = 'param_get '.$i.' '.$symbol;
-    echo "$req... :\n";
-    fwrite($fp, $req);
-    $res = fread($fp, 256);
-    $res = preg_split('/ +/', $res, 3);
-    $res[2] = substr($res[2],0,-1); // remove null termination
-    echo "res[0]=$res[0]\n";
-    echo "res[1]=$res[1]\n";
-    echo "res[2]=$res[2]\n";
-    $plugin_parameters[$uri][$symbol]=$res[2];
-  }
+
+
+if (isset($_POST['nodeID'])) {
+   $req = "param_set " . $nodeIDs[$_POST['nodeID']]['instanceNo'] . " " . $nodeIDs[$_POST['nodeID']]['symbol'] . " " . $_POST['value'];
+   fwrite($fp, $req);
+   $res = fread($fp, 256);
+   $res = substr($res,0,-1); // remove null termination
+   header('Content-Type: application/json');
+   echo json_encode($req . " : " . $res);
+   exit;
+}
+
+
+foreach ($nodeIDs as $nodeID => $data) {
+  //echo $nodeID . " => " . " { instanceNo: " . $data['instanceNo'] . ", symbol: " . $data['symbol'] . ", value: " . $data['value'] . ", uri: " . $data['uri']. " }\n";
+  $req = "param_get " . $data['instanceNo'] . " " . $data['symbol'];
+  //echo "$req... :\n";
+  fwrite($fp, $req);
+  $res = fread($fp, 256);
+  $res = preg_split('/ +/', $res, 3);
+  $res[2] = substr($res[2],0,-1); // remove null termination
+  //echo "res[0]=$res[0]\n";
+  //echo "res[1]=$res[1]\n";
+  //echo "res[2]=$res[2]\n";
+  $nodeIDs[$nodeID]['value'] = $res[2];
+
 } 
-var_dump($plugin_parameters);
+
+
+
+if (isset($_GET['getPluginData'])) {
+  header('Content-Type: application/json');
+  echo json_encode($nodeIDs);
+} else if (isset($_GET['DEBUG'])) {
+  var_dump($nodeIDs);
+} 
 fclose($fp);
-</xsl:text>
-  </xsl:processing-instruction>
+</xsl:processing-instruction>
 </xsl:template>
 
 
@@ -74,21 +94,18 @@ fclose($fp);
 
 <xsl:template name="handlePlugin">
   <xsl:text>
-$plugin_parameters['</xsl:text>
-  <xsl:value-of select="."/>
-  <xsl:text>'] = [];
+$instance++;
 </xsl:text>
   <xsl:call-template name="iterateOverPluginParameters"/>
 </xsl:template>
 
 
 <xsl:template name="handlePluginParameter">
-  <xsl:text>$plugin_parameters['</xsl:text>
-  <xsl:value-of select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()]/@rdf:about"/>
-  <xsl:text>']['</xsl:text>
-  <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:symbol"/>
-  <xsl:text>'] = 0;
-</xsl:text>
+  $nodeIDs['<xsl:value-of select="current()"/>'] = array();
+  $nodeIDs['<xsl:value-of select="current()"/>']['instanceNo'] = $instance;
+  $nodeIDs['<xsl:value-of select="current()"/>']['symbol'] = "<xsl:value-of select="key('descriptionsByNodeID', current())/lv2:symbol"/>";
+  $nodeIDs['<xsl:value-of select="current()"/>']['value'] = "<xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>";
+  $nodeIDs['<xsl:value-of select="current()"/>']['uri'] = "<xsl:value-of select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()]/@rdf:about"/>";
 </xsl:template>
 
 </xsl:stylesheet>

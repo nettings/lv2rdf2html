@@ -6,7 +6,8 @@
   
   This is a horrible stylesheet. That is because there is no bijective mapping
   of Turtle triplets to XML - triplets can be grouped for brevity or not. Hence,
-  each and every select statement starts over from the document root. Oh the pain.
+  each and every select statement starts over from the document root and matches via
+  ID attributes. Oh the pain.
 -->  
 
 <xsl:stylesheet version="1.0" 
@@ -52,6 +53,12 @@
     <link rel="stylesheet" href="lv2rdf2html.css" />
   </head>
   <body>
+    <div id="ajaxDebug">
+      <div id="ajaxDebug1">&#8203;
+      </div>
+      <div id="ajaxDebug2">&#8203;
+      </div>
+    </div>
     <div>
       <xsl:apply-templates/>
     </div>
@@ -66,10 +73,6 @@
 
 
 <xsl:template name="handlePlugin">
-  <script>
-plugin_parameters = {'<xsl:value-of select="."/>' : {} };
-  </script>
-  <xsl:call-template name="iterateOverPluginParameters"/>
   <div class="pluginGUI {.}">
     <h1>
       <xsl:value-of select="key('descriptionsByAbout', current())/doap:name"/>
@@ -87,12 +90,7 @@ plugin_parameters = {'<xsl:value-of select="."/>' : {} };
 
 
 <xsl:template name="handlePluginParameter">
-  <script>
-plugin_parameters['<xsl:value-of 
-      select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()]/@rdf:about"/>']['<xsl:value-of 
-      select="key('descriptionsByNodeID', current())/lv2:symbol"/>'] = 0;
-  </script>
-  <div class="formItem">
+  <div class="formItem ">
     <label for="{current()}">
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2:name"/>
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/rdfs:comment"/>

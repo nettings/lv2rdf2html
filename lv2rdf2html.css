@@ -5,6 +5,13 @@
 div {
   border: 1px grey dotted;
 }
+div#ajaxDebug {
+  position: fixed;
+  width: 36em;
+  right: 1em;
+  top: 1em;
+  background-color: #aaaa00;
+}
 div.pluginGUI {
   display: table;
 }
