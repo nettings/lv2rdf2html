@@ -61,7 +61,7 @@ function updateWidgets() {
 function setPluginData(nodeID, value) {
   if (updating) return;
   var updateIDs = { nodeID : nodeID, value : value };
-  $( '#ajaxDebug1' ).html("AJAXing..." + JSON.stringify(updateIDs) + "");
+  $( '#ajaxSend' ).html(JSON.stringify(updateIDs));
   $.ajax({
     url : CONTROLLER,
     type : 'POST',
@@ -72,7 +72,7 @@ function setPluginData(nodeID, value) {
       alert('Could not get plugin data from server: ' + msg);
     },
     success: function(msg) {
-      $( '#ajaxDebug2' ).html("OK, Here's something:" + JSON.stringify(msg) + "");
+      $( '#ajaxReceive' ).html(JSON.stringify(msg));
     }
   });
 }

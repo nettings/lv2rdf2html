@@ -10,7 +10,9 @@ div#ajaxDebug {
   width: 36em;
   right: 1em;
   top: 1em;
-  background-color: #aaaa00;
+  padding: 0.5ex;
+  background-color: #aaaaa5;
+  border: 4px outset #888880;
 }
 div.pluginGUI {
   display: table;

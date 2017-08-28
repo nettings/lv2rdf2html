@@ -54,10 +54,8 @@
   </head>
   <body>
     <div id="ajaxDebug">
-      <div id="ajaxDebug1">&#8203;
-      </div>
-      <div id="ajaxDebug2">&#8203;
-      </div>
+      Transmitted: <span id="ajaxSend">&#8203;</span><br/>
+      Received: <span id="ajaxReceive">&#8203;</span>
     </div>
     <div>
       <xsl:apply-templates/>
