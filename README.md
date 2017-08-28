@@ -11,14 +11,13 @@ other uses easily.
 The conversion is done with XSL transformations. This means that the 
 LV2 metadata must be converted to XML first.
 
-This stylesheet has been developed and tested with RDF/XML generated in the 
-following way:
+## Usage
   
 * Gather URI information of available plugins:
 ```
 #~> lv2ls
 ```
-* Collect plugin documentation in a Turtle file (lv2info appends to a file):
+* Collect the desired plugin documentation in a Turtle file (lv2info appends to a file):
 ```
 #~> rm output.ttl
 #~> lv2info -p output.ttl http://gareus.org/oss/lv2/fil4#stereo
@@ -26,20 +25,27 @@ following way:
     ...
 ```
 * Convert the turtle file to RDF/XML:
-  * Using [rdf2rdf](http://www.l3s.de/~minack/rdf2rdf/):
-  ```
-  #~> java -jar rdf2rdf-1.0.1-2.3.1.jar output.ttl output.xml
-  ```
-  * Using [rapper](http://librdf.org/raptor/rapper.html) (part of raptor/Redland):
+  * Using [rapper](http://librdf.org/raptor/rapper.html) (part of
+    raptor/Redland, this is what I use for testing):
   ```
   #~> rapper -o rdfxml -i turtle output.ttl > output2.xml
   ```
-* Apply this stylesheet and prettyprint:
+  * Using [rdf2rdf](http://www.l3s.de/~minack/rdf2rdf/) (I'm testing this
+every once in a while, but expect hiccups)
+  ```
+  #~> java -jar rdf2rdf-1.0.1-2.3.1.jar output.ttl output.xml
+  ```
+* Generate the HTML page and prettyprint:
 ```
-#~> xsltproc lv2rdf2html.xsl output.xml | xsltproc xml-prettyprint.xsl - > output.html
-#~> xsltproc lv2rdf2html.xsl output2.xml | xsltproc xml-prettyprint.xsl - > output2.html
+#~> xsltproc lv2rdf2html.xsl output.xml | xsltproc xml-prettyprint.xsl - > index.html
 ```
-It currently tries to support all LV2 features used by the plugins listed above.
+* Generate the PHP AJAX handler:
+```
+#~> xsltproc lv2rdf2php.xsl output.xml > pluginController.php
+```
+* Deploy everything to a PHP-enabled webserver, including the CSS and
+Javascript. There is a script `deploy.sh` that tries to be clever about this
+and auto-deploys whenever you modify a file on disk. Works for me.
 
 ## Requirements
 
@@ -55,6 +61,10 @@ It currently tries to support all LV2 features used by the plugins listed above.
 * a PHP-capable webserver
 
 ## Status
+
+lv2rdf2html currently tries to support all LV2 features used by the plugins
+listed above. As bugs are shaken out, more plugins will be added to the 
+testing environment.
 
 Currently, lv2rdf2html produces a partially functional GUI (expect oddities
 with checkboxes and drop-down menus). It polls mod-host on startup, updates
@@ -74,3 +84,9 @@ that's why it's soo terrible.
 There is a very clean alternative converter at http://www.easyrdf.org/converter
 which appears to do perfect grouping, but I'm a bit wary of supporting it because
 it requires PHP, fails to include namespace prefixes and seems to make a few risky guesses...
+
+Sometimes, the generated UI is not very nice to use because of deficiencies
+in this code, and sometimes because the plugin's metadata is sub-optimal.
+Calf is a bad example here, it does much usability magic in its GUI and
+exposes ports with coefficient gains rather than logarithmic. I hope I can
+get a few of these issues fixed upstream as the project matures.
