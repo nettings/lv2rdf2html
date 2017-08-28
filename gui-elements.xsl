@@ -22,29 +22,56 @@
 
 
 <xsl:template name="pluginParameterEnumeration">
-  <select id="{current()}" name="{key('descriptionsByNodeID', current())/lv2:symbol}">
+  <select id="{current()}_" name="{key('descriptionsByNodeID', current())/lv2:symbol}">
     <!-- iterate over all descriptions belonging to the current nodeID. --> 
     <xsl:for-each select="key('descriptionsByNodeID', current())[lv2:scalePoint]">
-      <option value="{key('descriptionsByNodeID', current()/lv2:scalePoint/@rdf:nodeID)/rdf:value}">
+      <option value="{key('descriptionsByNodeID', lv2:scalePoint/@rdf:nodeID)/rdf:value}">
+        <xsl:if test="
+          key('descriptionsByNodeID', lv2:scalePoint/@rdf:nodeID)/rdf:value 
+            = key('descriptionsByNodeID', current())/lv2:default
+          or (position() = 1 and not(key('descriptionsByNodeID', current())/lv2:default))
+        ">
+          <xsl:attribute name="selected">selected</xsl:attribute>
+        </xsl:if>
         <xsl:value-of select="key('descriptionsByNodeID', current()/lv2:scalePoint/@rdf:nodeID)/rdfs:label"/>
       </option>                     
     </xsl:for-each>
   </select>
+  <input
+    id="{current()}"
+    name="{key('descriptionsByNodeID', current())/lv2:symbol}"
+    type="hidden" 
+    value="{key('descriptionsByNodeID', current())/lv2:default}"
+  />
   <script>
-  $("#<xsl:value-of select="current()"/>").change(function () {
-  var value = this.value;
+
+$( "#<xsl:value-of select="current()"/>_" ).change(function () {
+  us = $( "#<xsl:value-of select="current()"/>_" );
+  them = $( "#<xsl:value-of select="current()"/>" );
+  var value = us.val();
+  them.val(value);
+  alert('#<xsl:value-of select="current()"/>_ changed to ' + value);
   <xsl:call-template name="setPluginDataFunc"/>
 });
+$( "#<xsl:value-of select="current()"/>" ).change(function () {
+  us = $( "#<xsl:value-of select="current()"/>" );
+  them = $( "#<xsl:value-of select="current()"/>_" );
+  var value = us.val();
+  them.val(value);
+  alert('#<xsl:value-of select="current()"/> changed to ' + value);
+});
+
+
   </script>
 </xsl:template>
 
 
 <xsl:template name="pluginParameterCheckbox">
   <input 
-    id="{current()}"
+    id="{current()}_"
     name="{key('descriptionsByNodeID', current())/lv2:symbol}"
     type="checkbox" 
-    value="{key('descriptionsByNodeID', current())/lv2:default}"
+    value="1"
   >
     <xsl:if test="
       key('descriptionsByNodeID', current())/lv2:default 
@@ -54,18 +81,35 @@
       <xsl:attribute name="checked">checked</xsl:attribute>
     </xsl:if>
   </input>
+  <input
+    id="{current()}"
+    name="{key('descriptionsByNodeID', current())/lv2:symbol}"
+    type="hidden" 
+    value="{key('descriptionsByNodeID', current())/lv2:default}"
+  />
   <script>  
-
-$( "#<xsl:value-of select="current()"/>" ).change(function () {
-  if (this.value == 0) {
-    $( "#<xsl:value-of select="current()"/>" ).val( 1 );
-    $( "#<xsl:value-of select="current()"/>" ).attr("checked", "checked");
+$( "#<xsl:value-of select="current()"/>_" ).change(function () {
+  us = $( "#<xsl:value-of select="current()"/>_" );
+  them = $( "#<xsl:value-of select="current()"/>" );
+  if (us.is(":checked")) {
+    them.val(1);
   } else {
-    $( "#<xsl:value-of select="current()"/>" ).val( 0 );
-    $( "#<xsl:value-of select="current()"/>" ).removeAttr("checked");
-  }  
-  var value = this.value;
+    them.val(0);
+  }
+  var value = them.val();
   <xsl:call-template name="setPluginDataFunc"/>
+});
+$( "#<xsl:value-of select="current()"/>" ).change(function () {
+  us = $( "#<xsl:value-of select="current()"/>" );
+  them = $( "#<xsl:value-of select="current()"/>_" );
+  var value = us.val();
+  if (value == 1) {
+    them.prop('checked', true);
+    console.log("#<xsl:value-of select="current()"/> checked");
+  } else {
+    them.removeAttr('checked', false);
+    console.log("#<xsl:value-of select="current()"/> unchecked");
+  }
 });
   </script>
 </xsl:template>
@@ -74,9 +118,10 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
 <xsl:template name="pluginParameterSlider">
   <div class="slider" id="{current()}_">&#8203;</div>
   <input 
-    class="value" 
     id="{current()}" 
+    class="value" 
     name="{key('descriptionsByNodeID', current())/lv2:symbol}"
+    type="text"
     value="{key('descriptionsByNodeID', current())/lv2:default}"
     min="{key('descriptionsByNodeID', current())/lv2:minimum}"
     max="{key('descriptionsByNodeID', current())/lv2:maximum}"

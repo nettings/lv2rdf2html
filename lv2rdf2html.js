@@ -7,34 +7,51 @@
 const SLIDER_RESOLUTION=1000;
 const CONTROLLER = "pluginController.php";
 
+var nodeIDs = {};
+
 var updating = false;
 
+
+function init() {
+  getPluginData();
+}
+
 function getPluginData() {
+  $.ajax({
+    dataType: "json",
+    url: CONTROLLER,
+    data: "getPluginData",
+    success: function (pluginData) {
+      nodeIDs = pluginData;
+      //alert("getPluginData(): " + JSON.stringify(nodeIDs));
+      updateWidgets();
+    }
+  });
+} 
+
+function updateWidgets() {
   updating = true;
-  $.getJSON( CONTROLLER, "getPluginData", function (nodeIDs) {
-    //alert(JSON.stringify(nodeIDs));
-    $.each( nodeIDs, function( nodeID, data ) {
-      if (typeof(nodeID) != 'undefined') {
-        // handle race condition at initial load where we might 
-        // call a method before initialisation is complete
-        var tries = 0;
-        var error;
-        do {
-          try {
-            tries++;
-              $( '#' + nodeID).val(data.value);
-              $( '#' + nodeID).trigger("change");
-          } catch(e) {
-            setTimeout( function() {
-              error = e;
-            }, 5);
-          }
-        } while (error);
-        //console.log('setting #' + nodeID + '(' + data.uri + '.' + data.symbol + ' => ' + data.value);
-        //console.log('\t...took ' + tries + ' attempts');
-      }
-    }); 
-    //alert(JSON.stringify(pluginParameterIDs));
+  //alert("updateWidgets(): " + JSON.stringify(nodeIDs));
+  $.each( nodeIDs, function( nodeID, data ) {
+    if (typeof(nodeID) != 'undefined') {
+      // handle race condition at initial load where we might 
+      // call a method before initialisation is complete
+      var tries = 0;
+      var error;
+      do {
+        try {
+          tries++;
+            $( '#' + nodeID).val(data.value);
+            $( '#' + nodeID).change();
+        } catch(e) {
+          setTimeout( function() {
+            error = e;
+          }, 5);
+        }
+      } while (error);
+      console.log('setting #' + nodeID + '(' + data.uri + '.' + data.symbol + ') => ' + data.value);
+      console.log('\t...took ' + tries + ' attempts. Actual value now: ' + nodeIDs[nodeID]['value']);
+    }
   }); 
   setTimeout( function() {
     updating = false;
@@ -52,7 +69,7 @@ function setPluginData(nodeID, value) {
     dataType: 'json',
     async: true,
     error: function(msg) {
-      alert(JSON.stringify(msg));
+      alert('Could not get plugin data from server: ' + msg);
     },
     success: function(msg) {
       $( '#ajaxDebug2' ).html("OK, Here's something:" + JSON.stringify(msg) + "");
@@ -79,4 +96,4 @@ function log2lin(value, min, max) {
   return (Math.log(value) - minval) / ratio;
 }
  
-$( getPluginData );  
+$( init );  
