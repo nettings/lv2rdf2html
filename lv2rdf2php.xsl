@@ -3,11 +3,6 @@
   lv2rdf2php.xsl
   (C) 2017 by Jörn Nettingsmeier. This transform is licensed under the
   GNU General Public License v3.
-  
-  This is a horrible stylesheet. That is because there is no bijective mapping
-  of Turtle triplets to XML - triplets can be grouped for brevity or not. Hence,
-  each and every select statement starts over from the document root and matches via
-  ID attributes. Oh the pain.
 -->  
 
 <xsl:stylesheet version="1.0" 
@@ -47,7 +42,6 @@ $instance = 0;
 
     <xsl:apply-templates/>
 
-
 if (isset($_POST['nodeID'])) {
    $req = "param_set " . $nodeIDs[$_POST['nodeID']]['instanceNo'] . " " . $nodeIDs[$_POST['nodeID']]['symbol'] . " " . $_POST['value'];
    fwrite($fp, $req);
@@ -73,8 +67,6 @@ foreach ($nodeIDs as $nodeID => $data) {
   $nodeIDs[$nodeID]['value'] = $res[2];
 
 } 
-
-
 
 if (isset($_GET['getPluginData'])) {
   header('Content-Type: application/json');

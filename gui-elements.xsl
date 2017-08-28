@@ -46,7 +46,6 @@
     value="{key('descriptionsByNodeID', current())/lv2:default}"
   />
   <script>
-
 $( "#<xsl:value-of select="current()"/>_" ).change(function () {
   us = $( "#<xsl:value-of select="current()"/>_" );
   them = $( "#<xsl:value-of select="current()"/>" );
@@ -60,8 +59,6 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
   var value = us.val();
   them.value = value;
 });
-
-
   </script>
 </xsl:template>
 
