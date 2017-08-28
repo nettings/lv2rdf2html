@@ -31,7 +31,7 @@ LV2 metadata must be converted to XML first.
   #~> rapper -o rdfxml -i turtle output.ttl > output2.xml
   ```
   * Using [rdf2rdf](http://www.l3s.de/~minack/rdf2rdf/) (I'm testing this
-every once in a while, but expect hiccups)
+every once in a while, but expect hiccups):
   ```
   #~> java -jar rdf2rdf-1.0.1-2.3.1.jar output.ttl output.xml
   ```
@@ -59,6 +59,7 @@ and auto-deploys whenever you modify a file on disk. Works for me.
   * [rdf2rdf](http://www.l3s.de/~minack/rdf2rdf/).
 * [mod-host](https://github.com/moddevices/mod-host), and
 * a PHP-capable webserver
+* (optional) inotify-tools for automated deployment
 
 ## Status
 
