@@ -56,8 +56,12 @@ It currently tries to support all LV2 features used by the plugins listed above.
 
 ## Status
 
-Currently, lv2rdf2html produces a non-functional mockup GUI and is able to
-query the current state of plugins running in mod-host.
+Currently, lv2rdf2html produces a partially functional GUI (expect oddities
+with checkboxes and drop-down menus). It polls mod-host on startup, updates
+its view and correctly relays slider movements to the AJAX handler, which
+then updates the mod-host settings accordingly. Buggy as hell and constantly
+evolving, the code is currently a mess, although the basic architecture is
+sound.
     
 ## Notes
 

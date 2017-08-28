@@ -4,7 +4,7 @@
   licensed under the terms of the GNU GPL v3.
 */
 
-const SLIDER_RESOLUTION=1024;
+const SLIDER_RESOLUTION=1000;
 const CONTROLLER = "pluginController.php";
 
 
@@ -30,7 +30,8 @@ function getPluginData() {
                 }, 5);
               }
             } while (error);
-            console.log('setting #' + nodeID + '(' + data.uri + '.' + data.symbol + ' => ' + data.value + ', took ' + tries + ' attempts.');
+            console.log('setting #' + nodeID + '(' + data.uri + '.' + data.symbol + ' => ' + data.value);
+            console.log('\t...took ' + tries + ' attempts');
           }
     }); 
     //alert(JSON.stringify(pluginParameterIDs));
@@ -70,15 +71,15 @@ function round(value, decimals) {
 function lin2log(value, min, max) {
   var minval = Math.log(min);
   var maxval = Math.log(max);
-  var ratio = (maxval - minval) / (SLIDER_RESOLUTION);
-  return Math.exp(minval + ratio * (value - min));
+  var ratio = (maxval - minval) / SLIDER_RESOLUTION;
+  return Math.exp(ratio * value + minval);
 }
    
 function log2lin(value, min, max) {
   var minval = Math.log(min);
   var maxval = Math.log(max);
-  var ratio = (maxval - minval) / (SLIDER_RESOLUTION);
-  return (Math.log(value) - minval) / ratio + min;
+  var ratio = (maxval - minval) / SLIDER_RESOLUTION;
+  return (Math.log(value) - minval) / ratio;
 }
  
 $( getPluginData );  

@@ -30,11 +30,22 @@
       </option>                     
     </xsl:for-each>
   </select>
+  <script>
+  $("#<xsl:value-of select="current()"/>").change(function () {
+  var value = this.value;
+  <xsl:call-template name="setPluginDataFunc"/>
+});
+  </script>
 </xsl:template>
 
 
 <xsl:template name="pluginParameterCheckbox">
-  <input type="checkbox">
+  <input 
+    id="{current()}"
+    name="{key('descriptionsByNodeID', current())/lv2:symbol}"
+    type="checkbox" 
+    value="{key('descriptionsByNodeID', current())/lv2:default}"
+  >
     <xsl:if test="
       key('descriptionsByNodeID', current())/lv2:default 
       and 
@@ -43,6 +54,20 @@
       <xsl:attribute name="checked">checked</xsl:attribute>
     </xsl:if>
   </input>
+  <script>  
+
+$( "#<xsl:value-of select="current()"/>" ).change(function () {
+  if (this.value == 0) {
+    $( "#<xsl:value-of select="current()"/>" ).val( 1 );
+    $( "#<xsl:value-of select="current()"/>" ).attr("checked", "checked");
+  } else {
+    $( "#<xsl:value-of select="current()"/>" ).val( 0 );
+    $( "#<xsl:value-of select="current()"/>" ).removeAttr("checked");
+  }  
+  var value = this.value;
+  <xsl:call-template name="setPluginDataFunc"/>
+});
+  </script>
 </xsl:template>
 
 
@@ -93,7 +118,7 @@ $( function() {
     }        
   });
 });
-$("#<xsl:value-of select="current()"/>").change(function () {
+$( "#<xsl:value-of select="current()"/>" ).change(function () {
   var value = this.value;
   $("#<xsl:value-of
     select="current()"/>_").slider("value", log2lin(value, <xsl:value-of 
