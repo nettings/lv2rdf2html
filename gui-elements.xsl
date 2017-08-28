@@ -22,7 +22,9 @@
 
 
 <xsl:template name="pluginParameterEnumeration">
-  <select id="{current()}_" name="{key('descriptionsByNodeID', current())/lv2:symbol}">
+  <select 
+    id="{current()}_" 
+    name="{key('descriptionsByNodeID', current())/lv2:symbol}_">
     <!-- iterate over all descriptions belonging to the current nodeID. --> 
     <xsl:for-each select="key('descriptionsByNodeID', current())[lv2:scalePoint]">
       <option value="{key('descriptionsByNodeID', lv2:scalePoint/@rdf:nodeID)/rdf:value}">
@@ -50,15 +52,13 @@ $( "#<xsl:value-of select="current()"/>_" ).change(function () {
   them = $( "#<xsl:value-of select="current()"/>" );
   var value = us.val();
   them.val(value);
-  alert('#<xsl:value-of select="current()"/>_ changed to ' + value);
   <xsl:call-template name="setPluginDataFunc"/>
 });
 $( "#<xsl:value-of select="current()"/>" ).change(function () {
   us = $( "#<xsl:value-of select="current()"/>" );
   them = $( "#<xsl:value-of select="current()"/>_" );
   var value = us.val();
-  them.val(value);
-  alert('#<xsl:value-of select="current()"/> changed to ' + value);
+  them.value = value;
 });
 
 
@@ -69,7 +69,7 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
 <xsl:template name="pluginParameterCheckbox">
   <input 
     id="{current()}_"
-    name="{key('descriptionsByNodeID', current())/lv2:symbol}"
+    name="{key('descriptionsByNodeID', current())/lv2:symbol}_"
     type="checkbox" 
     value="1"
   >
