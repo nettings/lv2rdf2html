@@ -7,7 +7,6 @@
 const SLIDER_RESOLUTION=1000;
 const CONTROLLER = "pluginController.php";
 
-
 var updating = false;
 
 function getPluginData() {
@@ -15,38 +14,36 @@ function getPluginData() {
   $.getJSON( CONTROLLER, "getPluginData", function (nodeIDs) {
     //alert(JSON.stringify(nodeIDs));
     $.each( nodeIDs, function( nodeID, data ) {
-          if (typeof(nodeID) != 'undefined') {
-            $( '#' + nodeID).val(data.value);
-            // avoid calling method before initialisation is complete
-            var tries = 0;
-            var error;
-            do {
-              try {
-                tries++;
-                  $( '#' + nodeID).trigger("change");
-              } catch(e) {
-                setTimeout( function() {
-                  error = e;
-                }, 5);
-              }
-            } while (error);
-            console.log('setting #' + nodeID + '(' + data.uri + '.' + data.symbol + ' => ' + data.value);
-            console.log('\t...took ' + tries + ' attempts');
+      if (typeof(nodeID) != 'undefined') {
+        // handle race condition at initial load where we might 
+        // call a method before initialisation is complete
+        var tries = 0;
+        var error;
+        do {
+          try {
+            tries++;
+              $( '#' + nodeID).val(data.value);
+              $( '#' + nodeID).trigger("change");
+          } catch(e) {
+            setTimeout( function() {
+              error = e;
+            }, 5);
           }
+        } while (error);
+        //console.log('setting #' + nodeID + '(' + data.uri + '.' + data.symbol + ' => ' + data.value);
+        //console.log('\t...took ' + tries + ' attempts');
+      }
     }); 
     //alert(JSON.stringify(pluginParameterIDs));
   }); 
   setTimeout( function() {
     updating = false;
   }, 50);
-  };
+}
 
 function setPluginData(nodeID, value) {
-  
   if (updating) return;
-  
   var updateIDs = { nodeID : nodeID, value : value };
-  
   $( '#ajaxDebug1' ).html("AJAXing..." + JSON.stringify(updateIDs) + "");
   $.ajax({
     url : CONTROLLER,
@@ -60,7 +57,7 @@ function setPluginData(nodeID, value) {
     success: function(msg) {
       $( '#ajaxDebug2' ).html("OK, Here's something:" + JSON.stringify(msg) + "");
     }
-});
+  });
 }
 
 function round(value, decimals) {
