@@ -28,7 +28,7 @@ LV2 metadata must be converted to XML first.
   * Using [rapper](http://librdf.org/raptor/rapper.html) (part of
     raptor/Redland, this is what I use for testing):
   ```
-  #~> rapper -o rdfxml -i turtle output.ttl > output2.xml
+  #~> rapper -o rdfxml -i turtle output.ttl > output.xml
   ```
   * Using [rdf2rdf](http://www.l3s.de/~minack/rdf2rdf/) (I'm testing this
 every once in a while, but expect hiccups):
