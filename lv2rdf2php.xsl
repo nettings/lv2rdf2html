@@ -37,9 +37,16 @@
 <xsl:template match="/">
 
   <xsl:processing-instruction name="php">
-define("HOST", "192.168.1.21");
+define("HOST", "192.168.1.22");
 define("PORT", 5555);
-$fp = fsockopen(HOST, PORT);
+$errno = 0;
+$errstr = "";
+@$fp = fsockopen(HOST, PORT, $errno, $errstr);
+if (!$fp) {
+  header('Could not connect to mod-host.', true, 503);
+  echo 'Error No. ' . $errno . ': Could not connect to mod-host. Error message is "' . $errstr .'".';
+  exit;
+}
 $req = "";
 $res = "";
 $nodeIDs = array(); 
@@ -82,7 +89,7 @@ foreach ($nodeIDs as $nodeID => $data) {
   //echo "$res";
   $res = preg_split('/ +/', $res, 3); // split along spaces
   $last = count($res) - 1; // we expect the payload as the last token
-  $nodeIDs[$nodeID]['value'] = $last;
+  $nodeIDs[$nodeID]['value'] = $res[$last];
 } 
 
 
