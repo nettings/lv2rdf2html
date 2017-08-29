@@ -13,6 +13,8 @@ const LOG_RX = '#ajaxRX span';
 
 var nodeIDs = {};
 
+var updating = false;
+
 function init() {
   getPluginData();
 }
@@ -49,31 +51,24 @@ function getPluginData() {
 } 
 
 function updateWidgets() {
+  updating = true;
   //alert("updateWidgets(): " + JSON.stringify(nodeIDs));
   $.each( nodeIDs, function( nodeID, data ) {
     if (typeof(nodeID) != 'undefined') {
-      // handle race condition at initial load where we might 
-      // call a method before initialisation is complete
-      var tries = 0;
-      var error;
-      do {
-        try {
-          tries++;
-            $( '#' + nodeID).val(data.value);
-            $( '#' + nodeID).change();
-        } catch(e) {
-          setTimeout( function() {
-            error = e;
-          }, 5);
-        }
-      } while (error);
-      console.log('setting #' + nodeID + '(' + data.uri + '.' + data.symbol + ') => ' + data.value);
-      console.log('\t...took ' + tries + ' attempts. Actual value now: ' + nodeIDs[nodeID]['value']);
+      $( '#' + nodeID).val(data.value);
     }
-  }); 
+  });
+  // take a second pass to avoid missed updates due to race condition 
+  setTimeout( function() {
+    $.each ( nodeIDs, function (nodeID ) {
+      $( '#' + nodeID).change();
+    });
+    updating = false;
+  }, 500);
 }
 
 function setPluginData(nodeID, value) {
+  if (updating) return;
   var updateIDs = { nodeID : nodeID, value : value };
   $( LOG_TX ).html(JSON.stringify(updateIDs));
   $.ajax({

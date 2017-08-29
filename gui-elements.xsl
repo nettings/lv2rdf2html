@@ -105,10 +105,10 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
   var value = us.val();
   if (value == 1) {
     them.prop('checked', true);
-    console.log("#<xsl:value-of select="current()"/> checked");
+    //console.log("#<xsl:value-of select="current()"/> checked");
   } else {
     them.removeAttr('checked', false);
-    console.log("#<xsl:value-of select="current()"/> unchecked");
+    //console.log("#<xsl:value-of select="current()"/> unchecked");
   }
 });
   </script>
