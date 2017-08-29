@@ -13,9 +13,6 @@ const LOG_RX = '#ajaxRX span';
 
 var nodeIDs = {};
 
-var updating = false;
-
-
 function init() {
   getPluginData();
 }
@@ -52,7 +49,6 @@ function getPluginData() {
 } 
 
 function updateWidgets() {
-  updating = true;
   //alert("updateWidgets(): " + JSON.stringify(nodeIDs));
   $.each( nodeIDs, function( nodeID, data ) {
     if (typeof(nodeID) != 'undefined') {
@@ -75,13 +71,9 @@ function updateWidgets() {
       console.log('\t...took ' + tries + ' attempts. Actual value now: ' + nodeIDs[nodeID]['value']);
     }
   }); 
-  setTimeout( function() {
-    updating = false;
-  }, 50);
 }
 
 function setPluginData(nodeID, value) {
-  if (updating) return;
   var updateIDs = { nodeID : nodeID, value : value };
   $( LOG_TX ).html(JSON.stringify(updateIDs));
   $.ajax({
