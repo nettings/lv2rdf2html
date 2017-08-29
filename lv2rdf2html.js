@@ -1,7 +1,8 @@
 /* 
   lv2rdf2html.js 
-  (C) 2017 Jörn Nettingsmeier
-  licensed under the terms of the GNU GPL v3.
+  (C) 2017 by Jörn Nettingsmeier. Usage rights are granted according to the
+  3-Clause BSD License (see COPYING).
+
 */
 
 const SLIDER_RESOLUTION=1000;

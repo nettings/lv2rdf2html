@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!--
   gui-elements.xsl
-  (C) 2017 by Jörn Nettingsmeier. This transform is licensed under the
-  GNU General Public License v3.
+  (C) 2017 by Jörn Nettingsmeier. Usage rights are granted according to the
+  3-Clause BSD License (see COPYING).
 -->
 
 <xsl:stylesheet version="1.0" 
@@ -46,6 +46,7 @@
     value="{key('descriptionsByNodeID', current())/lv2:default}"
   />
   <script>
+
 $( "#<xsl:value-of select="current()"/>_" ).change(function () {
   us = $( "#<xsl:value-of select="current()"/>_" );
   them = $( "#<xsl:value-of select="current()"/>" );
@@ -59,6 +60,8 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
   var value = us.val();
   them.value = value;
 });
+
+
   </script>
 </xsl:template>
 

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!--
   lv2rdf2html.xsl
-  (C) 2017 by Jörn Nettingsmeier. This transform is licensed under the
-  GNU General Public License v3.
+  (C) 2017 by Jörn Nettingsmeier. Usage rights are granted according to the
+  3-Clause BSD License (see COPYING).
   
   This is a horrible stylesheet. That is because there is no bijective mapping
   of Turtle triplets to XML - triplets can be grouped for brevity or not. Hence,
