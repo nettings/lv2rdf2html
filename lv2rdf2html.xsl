@@ -54,8 +54,15 @@
   </head>
   <body>
     <div id="ajaxDebug">
-      Transmitted: <span id="ajaxSend">&#8203;</span><br/>
-      Received: <span id="ajaxReceive">&#8203;</span>
+      AJAX Debugging: <a class="X" href="#" onclick="javascript:$('#ajaxDebug').css('display','none')">x</a>
+      <div id="ajaxLog">
+        <div id="ajaxTX">
+          Transmitted: <span>&#8203;</span>
+        </div>
+        <div id="ajaxRX">
+          Received: <span>&#8203;</span>
+        </div>
+      </div>
     </div>
     <div>
       <xsl:apply-templates/>

@@ -8,6 +8,9 @@
 const SLIDER_RESOLUTION=1000;
 const CONTROLLER = "pluginController.php";
 
+const LOG_TX = '#ajaxTX span';
+const LOG_RX = '#ajaxRX span';
+
 var nodeIDs = {};
 
 var updating = false;
@@ -17,14 +20,32 @@ function init() {
   getPluginData();
 }
 
+function renderAJAXStatus(msg) {
+  var result = msg['status'] + " " + msg['statusText'] + "\n"; 
+  result += "readyState: ";
+  switch (msg['readyState']) {
+    case 1: result += "loading"; break;
+    case 2: result += "loaded"; break;
+    case 3: result += "interactive"; break;
+    case 4: result += "complete"; break;
+  }
+  result += ".\nresponseText: " + msg['responseText'] + ".\n";
+  return result;
+}
+
 function getPluginData() {
+  const request = 'getPluginData';
+  $( LOG_TX ).html(request);
   $.ajax({
     dataType: "json",
     url: CONTROLLER,
-    data: "getPluginData",
+    data: request,
+    error: function(msg) {
+      alert('getPluginData() failed.\n' + renderAJAXStatus(msg));
+    },
     success: function (pluginData) {
+      $( LOG_RX ).html(JSON.stringify(pluginData));
       nodeIDs = pluginData;
-      //alert("getPluginData(): " + JSON.stringify(nodeIDs));
       updateWidgets();
     }
   });
@@ -62,7 +83,7 @@ function updateWidgets() {
 function setPluginData(nodeID, value) {
   if (updating) return;
   var updateIDs = { nodeID : nodeID, value : value };
-  $( '#ajaxSend' ).html(JSON.stringify(updateIDs));
+  $( LOG_TX ).html(JSON.stringify(updateIDs));
   $.ajax({
     url : CONTROLLER,
     type : 'POST',
@@ -70,10 +91,10 @@ function setPluginData(nodeID, value) {
     dataType: 'json',
     async: true,
     error: function(msg) {
-      alert('Could not get plugin data from server: ' + msg);
+      alert('setPluginData("'+ nodeID + '", ' + value + ') failed.\n' + renderAJAXStatus(msg));
     },
     success: function(msg) {
-      $( '#ajaxReceive' ).html(JSON.stringify(msg));
+      $( LOG_RX ).html(JSON.stringify(msg));
     }
   });
 }

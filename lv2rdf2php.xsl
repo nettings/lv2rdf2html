@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
 <!--
   lv2rdf2php.xsl
-  (C) 2017 by Jörn Nettingsmeier. Usage rights are granted according to the
-  3-Clause BSD License (see COPYING).
+  (C) 2017 by Jörn Nettingsmeier. This transform is licensed under the
+  GNU General Public License v3.
+  
+  This is a horrible stylesheet. That is because there is no bijective mapping
+  of Turtle triplets to XML - triplets can be grouped for brevity or not. Hence,
+  each and every select statement starts over from the document root and matches via
+  ID attributes. Oh the pain.
 -->  
 
 <xsl:stylesheet version="1.0" 
@@ -42,37 +47,66 @@ $instance = 0;
 
     <xsl:apply-templates/>
 
+
 if (isset($_POST['nodeID'])) {
    $req = "param_set " . $nodeIDs[$_POST['nodeID']]['instanceNo'] . " " . $nodeIDs[$_POST['nodeID']]['symbol'] . " " . $_POST['value'];
    fwrite($fp, $req);
    $res = fread($fp, 256);
-   $res = substr($res,0,-1); // remove null termination
-   header('Content-Type: application/json');
-   echo json_encode($req . " : " . $res);
+   $res = substr($res, 0, -1); // remove null termination
+   $retval = substr($res, 5); // assume "resp N"
+   if ($retval == 0) { 
+     // default case, all is well
+     header('Content-Type: application/json');
+     echo json_encode($req . " completed successfully.");
+   } else if ($retval > 0) {
+     // only for newly instantiated plugins (not implemented yet in the frontend)
+     header('Content-Type: application/json');
+     echo json_encode($retval);
+   } else if ($retval &lt; 0) {
+     header('mod-host command error ' . $retval, true, 503);
+     echo 'mod-host command error ' . $retval;
+   } else {
+     header('Unknown mod-host command error: ' . $res, true, 503);
+     echo 'Unknown mod-host command error: ' . $res;
+   }
    exit;
 }
 
 
 foreach ($nodeIDs as $nodeID => $data) {
-  //echo $nodeID . " => " . " { instanceNo: " . $data['instanceNo'] . ", symbol: " . $data['symbol'] . ", value: " . $data['value'] . ", uri: " . $data['uri']. " }\n";
   $req = "param_get " . $data['instanceNo'] . " " . $data['symbol'];
-  //echo "$req... :\n";
+  //echo "$req... : ";
   fwrite($fp, $req);
   $res = fread($fp, 256);
-  $res = preg_split('/ +/', $res, 3);
-  $res[2] = substr($res[2],0,-1); // remove null termination
-  //echo "res[0]=$res[0]\n";
-  //echo "res[1]=$res[1]\n";
-  //echo "res[2]=$res[2]\n";
-  $nodeIDs[$nodeID]['value'] = $res[2];
-
+  $res = substr($res,0,-1); // remove null termination
+  //echo "$res";
+  $res = preg_split('/ +/', $res, 3); // split along spaces
+  $last = count($res) - 1; // we expect the payload as the last token
+  $nodeIDs[$nodeID]['value'] = $last;
 } 
+
+
 
 if (isset($_GET['getPluginData'])) {
   header('Content-Type: application/json');
   echo json_encode($nodeIDs);
 } else if (isset($_GET['DEBUG'])) {
-  var_dump($nodeIDs);
+</xsl:processing-instruction>
+<html>
+  <head>
+    <title>DEBUG</title>
+  </head>
+  <body>
+    <div>
+      <pre>
+<xsl:processing-instruction name="php">
+        var_dump($nodeIDs);
+</xsl:processing-instruction>
+      </pre>
+    </div>
+  </body>
+</html>
+<xsl:processing-instruction name="php">     
 } 
 fclose($fp);
 </xsl:processing-instruction>

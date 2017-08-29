@@ -3,13 +3,34 @@ div {
 }
 div#ajaxDebug {
   position: fixed;
-  width: 36em;
+  width: 30em;
+  max-width: 50%;
   right: 1em;
   top: 1em;
+  height: 15em;
   padding: 0.5ex;
+  font-weight: bold;
   background-color: #aaaaa5;
   border: 4px outset #888880;
 }
+div#ajaxDebug a.X {
+  position: absolute;
+  color: #000000;
+  text-decoration: none;
+  right: 1ex;
+  top: 0.1ex;
+  border: solid #444444 1px;
+}
+div#ajaxLog div {
+  position: relative;
+  overflow: auto;
+  font-weight: normal;
+  background-color: #ddddd2;
+  border: 4px inset #888880;
+
+}
+div#ajaxTX { height: 3em; }
+div#ajaxRX { height: 10em; }
 div.pluginGUI {
   display: table;
 }
