@@ -11,6 +11,8 @@ other uses easily.
 The conversion is done with XSL transformations. This means that the 
 LV2 metadata must be converted to XML first.
 
+![UI generated for x42-fil#stereo (by Robin Gareus, DSP by Fons
+!Adriaensen)](fil4stereo.png)
 ## Usage
   
 * Gather URI information of available plugins:
