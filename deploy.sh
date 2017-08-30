@@ -4,6 +4,8 @@ DOCROOT=/srv/www/htdocs/
 SOURCE=~/output.xml
 SLEEPTIME=5
 
+echo "Hit Control-C to terminate $0." 
+
 function deployHTML {
 while : ; do  
   inotifywait -e modify lv2rdf2html.xsl iterators.xsl gui-*.xsl ;
@@ -50,6 +52,5 @@ function user_break {
 trap user_break SIGINT
 
 while : ; do
-  echo "Hit Control-C to cleanly terminate $0." 
   sleep 60
 done
