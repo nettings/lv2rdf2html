@@ -43,6 +43,8 @@ every once in a while, but expect hiccups):
 ```
 #~> xsltproc lv2rdf2php.xsl output.xml > pluginController.php
 ```
+* Edit the mod-host server settings in [lv2rdf2php.xsl](lv2rdf2php.xsl) to
+reflect your local setup.
 * Deploy everything to a PHP-enabled webserver, including the CSS and
 Javascript. There is a script `deploy.sh` that tries to be clever about this
 and auto-deploys whenever you modify a file on disk. Works for me.
@@ -63,16 +65,12 @@ and auto-deploys whenever you modify a file on disk. Works for me.
 
 ## Status
 
-lv2rdf2html currently tries to support all LV2 features used by the plugins
+lv2rdf2html currently supports all LV2 features used by the plugins
 listed above. As bugs are shaken out, more plugins will be added to the 
-testing environment.
-
-Currently, lv2rdf2html produces a partially functional GUI (expect oddities
-with checkboxes and drop-down menus). It polls mod-host on startup, updates
-its view and correctly relays slider movements to the AJAX handler, which
-then updates the mod-host settings accordingly. Buggy as hell and constantly
-evolving, the code is currently a mess, although the basic architecture is
-sound.
+testing environment. 
+The generated web GUI is fully functional and interacts with a configurable
+mod-host instance, with a few missing features listed in the [TODO](TODO.md) 
+file that do not impede basic usability. 
     
 ## Notes
 
