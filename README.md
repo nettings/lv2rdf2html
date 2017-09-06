@@ -76,7 +76,7 @@ file that do not impede basic usability.
     
 ## Notes
 
-Rdf2rdf and rapper produce different RDF/XML: rdf2r2f tries to collate
+Rdf2rdf and rapper produce different RDF/XML: rdf2rdf tries to collate
 triplets (but does a horrible job of doing it in a consistent way), and rapper
 does the simple, clean thing of keeping every single triplet separate. Both work
 because the stylesheet doesn't make any assumptions about them being grouped, 
