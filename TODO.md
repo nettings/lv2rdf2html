@@ -5,3 +5,4 @@ read them back into the stylesheets.
 * implement parsing of double datatype in exponential notation 
 * implement double-click to default value. also: return to previous value
 * display value range in a nice way, slider scales?
+* make sliders update during drag, not just when released
