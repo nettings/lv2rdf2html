@@ -48,11 +48,11 @@ every once in a while, but expect hiccups):
 * Edit the mod-host server settings in [lv2rdf2php.xsl](lv2rdf2php.xsl) to
 reflect your local setup.
 * Deploy everything to a PHP-enabled webserver, including the CSS and
-Javascript. There is a script `deploy.sh` that tries to be clever about this
+Javascript. There is a [deployment script](deploy.sh) that tries to be clever about this
 and auto-deploys whenever you modify a file on disk. Works for me.
 
 The steps listed above can be automatically performed by parsing a mod-host
-command log with the experimental script `generate.sh`.
+command log with a (currently experimental) [generator script](generate.sh).
 
 ## Requirements
 
