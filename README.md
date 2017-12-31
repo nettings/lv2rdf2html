@@ -51,6 +51,9 @@ reflect your local setup.
 Javascript. There is a script `deploy.sh` that tries to be clever about this
 and auto-deploys whenever you modify a file on disk. Works for me.
 
+The steps listed above can be automatically performed by parsing a mod-host
+command log with the experimental script `generate.sh`.
+
 ## Requirements
 
 * LV2 plugins installed on your system,
