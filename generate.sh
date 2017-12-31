@@ -5,7 +5,7 @@ XSLDIR="."
 TARGETDIR="."
 
 if [[ -z "$1" ]] ; then 
-  echo Usage: $0 FILE
+  echo Usage: $0 FILE [-d]
   echo
   echo FILE is a mod-host command history used to create
   echo the plugin graph. $0 will filter out all the statements
@@ -13,6 +13,9 @@ if [[ -z "$1" ]] ; then
   echo
   echo $0 expects to find its XSL files in \'$XSLDIR\', and will 
   echo write generated files out to \'$TARGETDIR\'.
+  echo
+  echo The optional trailing parameter -d \(\"debug\"\) will prevent the removal
+  echo of temporary files to aid in debugging.
   exit 1
 fi
   
@@ -48,7 +51,7 @@ tac "$1" |				# print command history file in reverse order, last line first
       exit 2
     }
   xsltproc "$XSLDIR"/lv2rdf2html.xsl "$XMLOUTFILE" | 
-    xsltproc "$XSLDIR"/xml-prettyprint.xsl > index.html \
+    xsltproc "$XSLDIR"/xml-prettyprint.xsl - > index.html \
     && echo "Successfully created index.html" \
     || {
       echo "Failed to create index.html".
@@ -61,13 +64,13 @@ tac "$1" |				# print command history file in reverse order, last line first
       exit 4 
     }
       
-   
-rm "$TTLOUTFILE" \
-  || echo "Failed to remove temporary $TTLOUTFILE." \
-  && echo "Removed $TTLOUTFILE."
-rm "$XMLOUTFILE" \
-  || echo "Failed to remove temporary $XMLOUTFILE." \
-  && echo "Removed $XMLOUTFILE."
-
+if [[ $2 != "-d" ]] ; then    
+  rm "$TTLOUTFILE" \
+    || echo "Failed to remove temporary $TTLOUTFILE." \
+    && echo "Removed $TTLOUTFILE."
+  rm "$XMLOUTFILE" \
+    || echo "Failed to remove temporary $XMLOUTFILE." \
+    && echo "Removed $XMLOUTFILE."
+fi
 
 
