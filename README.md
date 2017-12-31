@@ -1,6 +1,6 @@
 # lv2rdf2html
-(C) 2017 by Jörn Nettingsmeier. This transform is licensed under the
-GNU General Public License v3.
+(C) 2017 by Jörn Nettingsmeier. This transform and all helper scripts and
+code is licensed under the BSD 3-Clause license.
 
 lv2rdf2html automatically generates HTML/jQuery GUIs for LV2 audio
 plugins. The original usecase is to control plugin instances running
