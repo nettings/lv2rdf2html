@@ -64,7 +64,7 @@ if (isset($_POST['nodeID'])) {
    $req = "param_set " 
    	. $nodeIDs[$_POST['nodeID']]['instanceNo'] . " " 
    	. $nodeIDs[$_POST['nodeID']]['symbol'] . " " 
-   	. filter_var($_POST['value'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_ALLOW_FRACTION);
+   	. filter_var($_POST['value'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
    fwrite($fp, $req);
    $res = fread($fp, 256);
    $res = substr($res, 0, -1); // remove null termination
