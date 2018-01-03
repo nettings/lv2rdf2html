@@ -1,6 +1,5 @@
 # TODO
-* move all configuration into separate file, possibly using <xsl:param>s to
-read them back into the stylesheets.
+* fix handling of multiple instances of the same plugin (currently broken)
 * implement stepped integer slider for integer ranges > [0,1]
 * implement parsing of double datatype in exponential notation 
 * implement double-click to default value. also: return to previous value
