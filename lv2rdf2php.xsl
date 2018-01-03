@@ -40,8 +40,8 @@
 <xsl:template match="/">
 
   <xsl:processing-instruction name="php">
-define("HOST", <xsl:value-of select="$host"/>);
-define("PORT", <xsl:value-of select="$port"/>);
+define("HOST", '<xsl:value-of select="$host"/>');
+define("PORT", '<xsl:value-of select="$port"/>');
 $errno = 0;
 $errstr = "";
 @$fp = fsockopen(HOST, PORT, $errno, $errstr);
@@ -64,7 +64,7 @@ if (isset($_POST['nodeID'])) {
    $req = "param_set " 
    	. $nodeIDs[$_POST['nodeID']]['instanceNo'] . " " 
    	. $nodeIDs[$_POST['nodeID']]['symbol'] . " " 
-   	. filter_sanitize_number($_POST['value'], FILTER_SANITIZE_NUMBER_FLOAT);
+   	. filter_var($_POST['value'], FILTER_SANITIZE_NUMBER_FLOAT);
    fwrite($fp, $req);
    $res = fread($fp, 256);
    $res = substr($res, 0, -1); // remove null termination
