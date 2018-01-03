@@ -1,4 +1,32 @@
-/* 
+<?xml version="1.0"?>
+<!--
+  lv2rdf2js.xsl
+  (C) 2017 by Jörn Nettingsmeier. Usage rights are granted according to the
+  3-Clause BSD License (see COPYING).
+-->  
+
+<xsl:stylesheet version="1.0" 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:doap="http://usefulinc.com/ns/doap#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:lv2="http://lv2plug.in/ns/lv2core#"
+  xmlns:lv2units="http://lv2plug.in/ns/extensions/units#"
+  xmlns:atom="http://lv2plug.in/ns/ext/atom#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  exclude-result-prefixes="xsl doap foaf lv2 lv2units atom owl rdf rdfs xsd"
+>
+
+<xsl:output 
+  method="xml" 
+  omit-xml-declaration="yes"
+/>
+
+<xsl:template match="/">
+</xsl:template>
+  <xsl:text>/* 
   lv2rdf2html.js 
   (C) 2017 by Jörn Nettingsmeier. Usage rights are granted according to the
   3-Clause BSD License (see COPYING).
@@ -6,7 +34,7 @@
 */
 
 const SLIDER_RESOLUTION=1000;
-const CONTROLLER = "pluginController.php";
+const CONTROLLER = "</xsl:text><xsl:value-of select="$ajaxuri"/><xsl:text>"
 
 const LOG_TX = '#ajaxTX span';
 const LOG_RX = '#ajaxRX span';
@@ -106,3 +134,5 @@ function log2lin(value, min, max) {
 }
  
 $( init );  
+  </xsl:text>
+</xsl:stylesheet>
