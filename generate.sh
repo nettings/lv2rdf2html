@@ -1,8 +1,9 @@
 #!/bin/bash
 # generate a web interface from a mod-host command history file
 
+. lv2rdf.conf
+
 XSLDIR="."
-TARGETDIR="."
 
 if [[ -z "$1" ]] ; then 
   echo Usage: $0 FILE [-d]
@@ -12,14 +13,14 @@ if [[ -z "$1" ]] ; then
   echo that instantiate plugins and create a web interface to match.
   echo
   echo $0 expects to find its XSL files in \'$XSLDIR\', and will 
-  echo write generated files out to \'$TARGETDIR\'.
+  echo write generated files out to \'$WEBGUIROOT\'.
   echo
   echo The optional trailing parameter -d \(\"debug\"\) will prevent the removal
   echo of temporary files to aid in debugging.
   exit 1
 fi
   
-TTLOUTFILE=`mktemp --tmpdir --suffix=.ttl output_XXXXXXX`
+TTLOUTFILE=`mktemp --tmpdir --suffix=.ttl lv2rdf_XXXXXXX`
 if [[ -z "$TTLOUTFILE" ]] ; then
   echo "Failed to create temporary TTL file."
   exit 1
@@ -27,7 +28,7 @@ else
   echo "Created temporary $TTLOUTFILE."
 fi
 
-XMLOUTFILE=`mktemp --tmpdir --suffix=.xml output_XXXXXXX`
+XMLOUTFILE=`mktemp --tmpdir --suffix=.xml lv2rdf_XXXXXXX`
 if [[ -z "$XMLOUTFILE" ]] ; then
   echo "Failed to create temporary XML file."
   exit 1
@@ -50,18 +51,38 @@ tac "$1" |				# print command history file in reverse order, last line first
       echo "Failed to parse $TTLOUTFILE."
       exit 2
     }
-  xsltproc "$XSLDIR"/lv2rdf2html.xsl "$XMLOUTFILE" | 
-    xsltproc "$XSLDIR"/xml-prettyprint.xsl - > index.html \
-    && echo "Successfully created index.html" \
+  xsltproc \
+    --stringparam jsuri "$JSURI" \
+    --stringparam cssuri "$CSSURI" \
+    "$XSLDIR"/lv2rdf2html.xsl "$XMLOUTFILE" \
+    | xsltproc "$XSLDIR"/xml-prettyprint.xsl - > "$WEBGUIROOT"/"$WEBGUIURI" \
+    && echo "Successfully created $WEBGUIURI" \
     || {
-      echo "Failed to create index.html".
+      echo "Failed to create $WEBGUIURI".
       exit 3
     }
-  xsltproc "$XSLDIR"/lv2rdf2php.xsl "$XMLOUTFILE" > pluginController.php \
-    && echo "Successfully created pluginController.php" \
+  xsltproc \
+    --stringparam host "$MODHOSTHOST" \
+    --param port "$MODHOSTPORT" \
+    "$XSLDIR"/lv2rdf2php.xsl "$XMLOUTFILE" > "$AJAXROOT"/"$AJAXURI" \
+    && echo "Successfully created $AJAXURI" \
     || {
-      echo "Failed to create pluginController.php".
+      echo "Failed to create $AJAXURI".
       exit 4 
+    }
+  xsltproc \
+    --stringparam ajaxuri "$AJAXURI" \
+    "$XSLDIR"/lv2rdf2js.xsl "$XMLOUTFILE" > "$WEBGUIROOT"/"$JSURI" \
+    && echo "Successfully created $JSURI" \
+    || {
+      echo "Failed to create $JSURI".
+      exit 5 
+    }
+  cp "$XSLDIR"/lv2rdf.css "$WEBGUIROOT"/"$CSSURI" \
+    && echo "Successfully installed $CSSURI." \
+    || {
+      echo "Failed to install $CSSURI".
+      exit 5 
     }
       
 if [[ $2 != "-d" ]] ; then    
