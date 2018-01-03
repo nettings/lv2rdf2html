@@ -33,6 +33,8 @@
 <xsl:include href="gui-helpers.xsl"/>
 <xsl:include href="iterators.xsl"/>
 
+<xsl:param name="jsuri"/>
+<xsl:param name="cssuri"/>
 
 <xsl:template match="/">
 <html> 
@@ -49,8 +51,8 @@
       crossorigin="anonymous">&#8203;
     </script>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
-    <script src="lv2rdf2html.js">&#8203;</script>
-    <link rel="stylesheet" href="lv2rdf2html.css" />
+    <script src="{$jsuri}">&#8203;</script>
+    <link rel="stylesheet" href="{$cssuri}" />
   </head>
   <body>
     <div id="ajaxDebug">

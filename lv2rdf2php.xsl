@@ -29,8 +29,8 @@
   omit-xml-declaration="yes"
 />
 
-<xsl:param name="host" select="localhost"/>
-<xsl:param name="port" select="5555"/>
+<xsl:param name="host"/>
+<xsl:param name="port"/>
 
 <xsl:include href="gui-elements.xsl"/>
 <xsl:include href="gui-helpers.xsl"/>

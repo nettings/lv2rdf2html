@@ -24,8 +24,9 @@
   omit-xml-declaration="yes"
 />
 
+<xsl:param name="ajaxuri"/>
+
 <xsl:template match="/">
-</xsl:template>
   <xsl:text>/* 
   lv2rdf2html.js 
   (C) 2017 by Jörn Nettingsmeier. Usage rights are granted according to the
@@ -135,4 +136,6 @@ function log2lin(value, min, max) {
  
 $( init );  
   </xsl:text>
+</xsl:template>
+
 </xsl:stylesheet>
