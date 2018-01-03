@@ -25,11 +25,16 @@
 
 <xsl:template name="iterateOverPlugins">
   <!-- iterate over each unique plugin URI -->
+<!--
   <xsl:for-each select="
     /rdf:RDF/rdf:Description/@rdf:about[
       count(.. | key('descriptionsByAbout', .)[1]) = 1
     ]
   ">
+    <xsl:call-template name="handlePlugin"/>
+  </xsl:for-each>
+-->
+  <xsl:for-each select="/rdf:RDF/rdf:Description[lv2:binary]/@rdf:about">
     <xsl:call-template name="handlePlugin"/>
   </xsl:for-each>
 </xsl:template>
