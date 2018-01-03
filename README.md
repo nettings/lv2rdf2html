@@ -14,7 +14,28 @@ LV2 metadata must be converted to XML first.
 ![UI generated for x42-fil#stereo (by Robin Gareus, DSP by Fons
 !Adriaensen)](fil4stereo.png)
 ## Usage
-  
+
+### Automatic processing with generate.sh
+The [generate.sh](generate.sh) script operates on a mod-host command history, and
+automatically generates and deploys all required components. To use it, please edit the settings in
+[lv2rdf.conf](lv2rdf.conf).
+
+The generator script will then
+* Collect the desired plugin documentation in a temporary Turtle file using lv2info
+* Convert the turtle file to a temporary RDF/XML file using [rapper](http://librdf.org/raptor/rapper.html)
+(part of raptor/Redland, this is what I use for testing). 
+* Generate, prettyprint and deploy a HTML file
+* Generate and deploy a corresponding Javascript file
+* Generate and deploy the PHP AJAX handler
+* Deploy a corresponding (minimal) CSS file
+
+The deploy.sh script is deprecated and does not reflect the current state of
+affairs.
+
+### Manual processing on the command line
+
+For development and debugging, the generation process can be done entirely
+manually.
 * Gather URI information of available plugins:
 ```
 #~> lv2ls
@@ -39,20 +60,39 @@ every once in a while, but expect hiccups):
   ```
 * Generate the HTML page and prettyprint:
 ```
-#~> xsltproc lv2rdf2html.xsl output.xml | xsltproc xml-prettyprint.xsl - > index.html
+#~> xsltproc \
+	--stringparam jsuri lv2rdf.js \ 
+	--stringparam cssuri lv2rdf.css \
+	lv2rdf2html.xsl output.xml \
+	| xsltproc xml-prettyprint.xsl - \
+		> lv2rdf.html
 ```
 * Generate the PHP AJAX handler:
 ```
-#~> xsltproc lv2rdf2php.xsl output.xml > pluginController.php
+#~> xsltproc \
+	--stringparam host "<your mod-host hostname>" \
+	--param port "<the port mod-host is listening on>" \
+	lv2rdf2php.xsl output.xml \
+	> lv2rdf.php
 ```
-* Edit the mod-host server settings in [lv2rdf2php.xsl](lv2rdf2php.xsl) to
-reflect your local setup.
-* Deploy everything to a PHP-enabled webserver, including the CSS and
-Javascript. There is a [deployment script](deploy.sh) that tries to be clever about this
-and auto-deploys whenever you modify a file on disk. Works for me.
+* Generate the Javascript code:
+```
+#~> xsltproc \
+	--stringparam ajaxuri lv2rdf.php \
+	lv2rdf2js.xsl output.xml > lv2rdf.js
+```
 
-The steps listed above can be automatically performed by parsing a mod-host
-command log with a (currently experimental) [generator script](generate.sh).
+* Deploy everything to a PHP-enabled webserver, including the CSS and
+Javascript. 
+The [deployment script](deploy.sh) tries to be clever about this
+and auto-deploys whenever you modify a file on disk. It is currently broken
+and deprecated.
+* Generate the Javascript code:
+```
+#~> xsltproc \
+	--stringparam ajaxuri lv2rdf.php \
+	lv2rdf2js.xsl output.xml > lv2rdf.js
+```
 
 ## Requirements
 
@@ -60,7 +100,7 @@ command log with a (currently experimental) [generator script](generate.sh).
 * the LV2 tools lv2ls and lv2info,
 * an XSLT 1.0  processor such as 
   * xsltproc or 
-  * saxon,
+  * saxon (currently unsupported unless you process manually),
 * a Turtle-to-XML RDF converter, such as
   * [rapper](http://librdf.org/raptor/rapper.html) or
   * [rdf2rdf](http://www.l3s.de/~minack/rdf2rdf/).
