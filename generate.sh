@@ -3,19 +3,18 @@
 
 . lv2rdf.conf
 
-XSLDIR="."
-
-if [[ -z "$1" ]] ; then 
-  echo Usage: $0 FILE [-d]
+if [[ "$1" == "-h" || "$1" == "--help" ]] ; then 
+  echo Usage: $0 [-d]
   echo
-  echo FILE is a mod-host command history used to create
-  echo the plugin graph. $0 will filter out all the statements
+  echo takes a mod-host command history file from \'$MODHOSTCONF\' 
+  echo \(the one used to create the plugin graph\). 
+  echo $0 will filter out all the statements
   echo that instantiate plugins and create a web interface to match.
   echo
   echo $0 expects to find its XSL files in \'$XSLDIR\', and will 
   echo write generated files out to \'$WEBGUIROOT\'.
   echo
-  echo The optional trailing parameter -d \(\"debug\"\) will prevent the removal
+  echo The optional parameter -d \(\"debug\"\) will prevent the removal
   echo of temporary files to aid in debugging.
   exit 1
 fi
@@ -36,7 +35,7 @@ else
   echo "Created temporary $XMLOUTFILE."
 fi
 
-tac "$1" |				# print command history file in reverse order, last line first 
+tac "$MODHOSTCONF" |			# print command history file in reverse order, last line first 
   awk '$1 ~ /^add$/ {print $0}' | 	# filter out commands that add a plugin
   sort -k3 -n -u |			# sort numerically by instance number, only showing the first occurrence (=last plugin loaded into that slot)
   awk '{print $2}' |			# print only the field containing the plugin URI
@@ -85,7 +84,7 @@ tac "$1" |				# print command history file in reverse order, last line first
       exit 5 
     }
       
-if [[ $2 != "-d" ]] ; then    
+if [[ $1 != "-d" ]] ; then    
   rm "$TTLOUTFILE" \
     || echo "Failed to remove temporary $TTLOUTFILE." \
     && echo "Removed $TTLOUTFILE."
