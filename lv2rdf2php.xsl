@@ -29,6 +29,9 @@
   omit-xml-declaration="yes"
 />
 
+<xsl:param name="host" select="localhost"/>
+<xsl:param name="port" select="5555"/>
+
 <xsl:include href="gui-elements.xsl"/>
 <xsl:include href="gui-helpers.xsl"/>
 <xsl:include href="iterators.xsl"/>
@@ -37,8 +40,8 @@
 <xsl:template match="/">
 
   <xsl:processing-instruction name="php">
-define("HOST", "192.168.1.22");
-define("PORT", 5555);
+define("HOST", <xsl:value-of select="$host"/>);
+define("PORT", <xsl:value-of select="$port"/>);
 $errno = 0;
 $errstr = "";
 @$fp = fsockopen(HOST, PORT, $errno, $errstr);
@@ -56,7 +59,12 @@ $instance = 0;
 
 
 if (isset($_POST['nodeID'])) {
-   $req = "param_set " . $nodeIDs[$_POST['nodeID']]['instanceNo'] . " " . $nodeIDs[$_POST['nodeID']]['symbol'] . " " . $_POST['value'];
+   // Be sure to sanitize user-generated input. We assume using it as an array index is safe.
+   // Strings used verbatim must be sanitized.
+   $req = "param_set " 
+   	. $nodeIDs[$_POST['nodeID']]['instanceNo'] . " " 
+   	. $nodeIDs[$_POST['nodeID']]['symbol'] . " " 
+   	. filter_sanitize_number($_POST['value'], FILTER_SANITIZE_NUMBER_FLOAT);
    fwrite($fp, $req);
    $res = fread($fp, 256);
    $res = substr($res, 0, -1); // remove null termination
