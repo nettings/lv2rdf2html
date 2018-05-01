@@ -36,7 +36,7 @@
 <xsl:param name="jsuri"/>
 <xsl:param name="cssuri"/>
 
-<xsl:template match="/">
+<xsl:template match="/*">
 <html> 
   <head>
     <meta charset="utf-8"/>
@@ -67,30 +67,24 @@
       </div>
     </div>
     <div>
-      <xsl:apply-templates/>
+      <xsl:call-template name="iterateOverPlugins"/> 
     </div>
   </body>
 </html>
 </xsl:template>
 
-
-<xsl:template match="/rdf:RDF">
-  <xsl:call-template name="iterateOverPlugins"/> 
-</xsl:template> 
-
-
 <xsl:template name="handlePlugin">
-  <div class="pluginGUI {.}">
+  <div class="pluginGUI" id="plugin{.}">
     <h1>
-      <xsl:value-of select="key('descriptionsByAbout', current())/doap:name"/>
+      <xsl:value-of select="key('descriptionsByPluginID', current())/doap:name"/>
     </h1>
     <div class="info">
-      <xsl:apply-templates select="key('descriptionsByAbout', current())/rdfs:comment"/>
-      <xsl:apply-templates select="key('descriptionsByAbout', current())/doap:license"/>
-      <xsl:apply-templates select="key('descriptionsByAbout', current())/foaf:name"/>
+      <xsl:apply-templates select="key('descriptionsByPluginID', current())/rdfs:comment"/>
+      <xsl:apply-templates select="key('descriptionsByPluginID', current())/doap:license"/>
+      <xsl:apply-templates select="key('descriptionsByPluginID', current())/foaf:name"/>
     </div>
     <form>
-     <xsl:call-template name="iterateOverPluginParameters"/>
+      <xsl:call-template name="iterateOverPluginParameters"/>
     </form>
   </div>    
 </xsl:template>

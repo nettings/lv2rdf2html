@@ -19,51 +19,37 @@
   exclude-result-prefixes="xsl doap foaf lv2 lv2units atom owl rdf rdfs xsd"
 >
 
-<xsl:key name="descriptionsByNodeID" match="/rdf:RDF/rdf:Description[@rdf:nodeID]" use="@rdf:nodeID"/>
-<xsl:key name="descriptionsByAbout" match="/rdf:RDF/rdf:Description[@rdf:about]" use="@rdf:about"/>
-
+<xsl:key name="descriptionsByNodeID" match="/*/rdf:RDF/rdf:Description[@rdf:nodeID]" use="@rdf:nodeID"/>
+<xsl:key name="descriptionsByAbout" match="/*/rdf:RDF/rdf:Description[@rdf:about]" use="@rdf:about"/>
+<xsl:key name="descriptionsByPluginID" match="/*/rdf:RDF/rdf:Description" use="ancestor::rdf:RDF/@pluginID"/>
 
 <xsl:template name="iterateOverPlugins">
-  <!-- iterate over each unique plugin URI -->
-<!--
-  <xsl:for-each select="
-    /rdf:RDF/rdf:Description/@rdf:about[
-      count(.. | key('descriptionsByAbout', .)[1]) = 1
-    ]
-  ">
-    <xsl:call-template name="handlePlugin"/>
-  </xsl:for-each>
--->
-  <xsl:for-each select="/rdf:RDF/rdf:Description[lv2:binary]/@rdf:about">
+  <xsl:for-each select="/*/rdf:RDF/@pluginID">
     <xsl:call-template name="handlePlugin"/>
   </xsl:for-each>
 </xsl:template>
 
 
 <xsl:template name="iterateOverPluginParameters">
-  <!-- iterate over all descriptions that belong to the current plugin URI -->
-  <xsl:for-each select="key('descriptionsByAbout', current())/lv2:port/@rdf:nodeID">
      <!-- iterate over all InputPorts that are ControlPorts -->
      <xsl:for-each select="
-       key('descriptionsByNodeID', current())[ 
+       key('descriptionsByPluginID', current())[ 
          rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
          and 
-         key('descriptionsByNodeID', current())[
+         key('descriptionsByPluginID', current())[
            rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
          ]
        ]/@rdf:nodeID
      ">
-                 
+        <xsl:sort select="../lv2:index"/>                 
 <!-- FIXME: ideally, this should be sorted according to lv2:index. Currently, I can't even get simple sorting by "." to work...                 
        <xsl:sort select="." data-type="text" order="descending"/>
        <xsl:sort select="key('descriptionsByNodeID', current())[lv2:index]/lv2:index" data-type="number" order="descending"/> 
        <xsl:value-of select="key('descriptionsByNodeID', current())[lv2:index]/lv2:index"/>
        <xsl:value-of select="."/>
 -->   
-       
        <xsl:call-template name="handlePluginParameter"/>  
      </xsl:for-each>
-  </xsl:for-each>
 </xsl:template>
 
 
