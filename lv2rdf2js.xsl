@@ -98,12 +98,12 @@ function updateWidgets() {
 
 function setPluginData(nodeID, value) {
   if (updating) return;
-  var updateIDs = { nodeID : nodeID, value : value };
-  $( LOG_TX ).html(JSON.stringify(updateIDs));
+  var update = { nodeID : nodeID, value : value };
+  $( LOG_TX ).html(JSON.stringify(update));
   $.ajax({
     url : CONTROLLER,
     type : 'POST',
-    data: updateIDs,
+    data: update,
     dataType: 'json',
     async: true,
     error: function(msg) {
