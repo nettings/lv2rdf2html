@@ -31,25 +31,21 @@
 
 
 <xsl:template name="iterateOverPluginParameters">
-     <!-- iterate over all InputPorts that are ControlPorts -->
-     <xsl:for-each select="
-       key('descriptionsByPluginID', current())[ 
-         rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
-         and 
-         key('descriptionsByPluginID', current())[
-           rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
-         ]
-       ]/@rdf:nodeID
-     ">
-        <xsl:sort select="../lv2:index"/>                 
-<!-- FIXME: ideally, this should be sorted according to lv2:index. Currently, I can't even get simple sorting by "." to work...                 
-       <xsl:sort select="." data-type="text" order="descending"/>
-       <xsl:sort select="key('descriptionsByNodeID', current())[lv2:index]/lv2:index" data-type="number" order="descending"/> 
-       <xsl:value-of select="key('descriptionsByNodeID', current())[lv2:index]/lv2:index"/>
-       <xsl:value-of select="."/>
--->   
-       <xsl:call-template name="handlePluginParameter"/>  
-     </xsl:for-each>
+  <!-- iterate over all InputPorts -->
+  <xsl:for-each select="
+    key('descriptionsByPluginID', current())[ 
+      rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
+    ]/@rdf:nodeID
+  "> 
+    <xsl:for-each select="
+      key('descriptionsByNodeID', current())[
+        rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
+      ]/@rdf:nodeID
+    ">
+      <xsl:sort select="lv2:index"/>
+      <xsl:call-template name="handlePluginParameter"/>  
+    </xsl:for-each>
+  </xsl:for-each>
 </xsl:template>
 
 
