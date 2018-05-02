@@ -20,7 +20,7 @@ function success {
 }
 
 function failure {
-  echo  -e " \033[1;31mfailed.\033[0m"
+  echo  -e " \033[1;31mfailed with return code $?.\033[0m"
   exit 1
 }
 
@@ -75,7 +75,7 @@ function build {
   echo -e "...closing output file $RDF."
   echo "</plugins>" >> "$RDF"
 
-  echo -ne "\tGenerating XHTML $WEBGUIURI..."
+  echo -ne "Generating XHTML $WEBGUIURI..."
   xsltproc \
     --stringparam jsuri "$JSURI" \
     --stringparam cssuri "$CSSURI" \
