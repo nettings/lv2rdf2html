@@ -32,8 +32,6 @@
 <xsl:param name="host"/>
 <xsl:param name="port"/>
 
-<xsl:include href="gui-elements.xsl"/>
-<xsl:include href="gui-helpers.xsl"/>
 <xsl:include href="iterators.xsl"/>
 
 
