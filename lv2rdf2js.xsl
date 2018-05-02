@@ -24,9 +24,12 @@
   omit-xml-declaration="yes"
 />
 
+<xsl:include href="iterators.xsl"/>
+<xsl:include href="gui-elements-js.xsl"/>
+
 <xsl:param name="ajaxuri"/>
 
-<xsl:template match="/">
+<xsl:template match="/*">
   <xsl:text>/* 
   lv2rdf2html.js 
   (C) 2017 by Jörn Nettingsmeier. Usage rights are granted according to the
@@ -133,9 +136,29 @@ function log2lin(value, min, max) {
   var ratio = (maxval - minval) / SLIDER_RESOLUTION;
   return (Math.log(value) - minval) / ratio;
 }
+
+</xsl:text>
+<xsl:call-template name="iterateOverPlugins"/>
+<xsl:text>
  
 $( init );  
   </xsl:text>
+</xsl:template>
+
+<xsl:template name="handlePlugin">
+  <xsl:text>
+// </xsl:text><xsl:value-of select="key('descriptionsByPluginID', current())/@rdf:about"/>
+  <xsl:text>
+</xsl:text>
+  <xsl:call-template name="iterateOverPluginParameters"/>
+</xsl:template>
+
+<xsl:template name="handlePluginParameter">
+  <xsl:text>
+// </xsl:text><xsl:value-of select="current()"/>
+  <xsl:text>
+</xsl:text>
+  <xsl:call-template name="selectPluginParameterHandler"/>
 </xsl:template>
 
 </xsl:stylesheet>

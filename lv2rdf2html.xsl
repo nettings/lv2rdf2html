@@ -29,9 +29,9 @@
   omit-xml-declaration="yes"
 />
 
-<xsl:include href="gui-elements.xsl"/>
-<xsl:include href="gui-helpers.xsl"/>
 <xsl:include href="iterators.xsl"/>
+<xsl:include href="gui-elements-html.xsl"/>
+<xsl:include href="gui-helpers.xsl"/>
 
 <xsl:param name="jsuri"/>
 <xsl:param name="cssuri"/>
