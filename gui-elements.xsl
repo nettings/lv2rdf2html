@@ -153,7 +153,7 @@ $( function() {
     min: 0,
     max: SLIDER_RESOLUTION,
     step: 1,
-    stop: function(event, ui) {
+    slide: function(event, ui) {
       var value = lin2log(ui.value, <xsl:value-of
         select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of 
         select="key('descriptionsByNodeID', current())/lv2:maximum"/>);
@@ -185,7 +185,7 @@ $( function() {
     step:  (<xsl:value-of 
       select="key('descriptionsByNodeID', current())/lv2:maximum"/> - <xsl:value-of 
       select="key('descriptionsByNodeID', current())/lv2:minimum"/>) / SLIDER_RESOLUTION,
-    stop: function(event, ui) {
+    slide: function(event, ui) {
       var value = ui.value;
       $("#<xsl:value-of select="current()"/>").val(value);
     <xsl:call-template name="setPluginDataFunc"/>
