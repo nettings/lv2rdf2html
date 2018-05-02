@@ -60,14 +60,39 @@
   <abbr title="{.}">&#8505;</abbr>
 </xsl:template>
 
-<xsl:template match="doap:license">
-  <p>License: <xsl:value-of select="
-      translate(
-        substring(
-          @rdf:resource, 36
-        ), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-      )
-  "/></p>
+<xsl:template name="license">
+  <xsl:for-each select="key('descriptionsByPluginID', current())/doap:license">
+    <p>License: 
+      <xsl:choose>
+        <xsl:when test="not(@rdf:resource)">
+          <xsl:text>not specified</xsl:text>
+        </xsl:when>
+        <!-- if it's a dead usefulinc URI, just display the last part in uppercase -->
+        <xsl:when test="contains(@rdf:resource, 'usefulinc.com/doap/licenses')">
+          <xsl:value-of select="
+            translate(
+              substring-after(
+                @rdf:resource, 'licenses/'
+              ), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            )
+          "/>
+        </xsl:when>
+        <!-- if it's an opensource.org URI, display the last part in uppercase and link -->
+        <xsl:when test="contains(@rdf:resource, 'opensource.org/licenses')">
+          <a href="{@rdf:resource}"><xsl:value-of select="
+            translate(
+              substring-after(
+                @rdf:resource, 'licenses/'
+              ), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            )
+          "/></a>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="@rdf:resource"/>
+        </xsl:otherwise> 
+      </xsl:choose>
+    </p>
+  </xsl:for-each>
 </xsl:template>
 
 <xsl:template match="foaf:name">

@@ -79,8 +79,7 @@
       <xsl:value-of select="key('descriptionsByPluginID', current())/doap:name"/>
     </h1>
     <div class="info">
-      <xsl:apply-templates select="key('descriptionsByPluginID', current())/rdfs:comment"/>
-      <xsl:apply-templates select="key('descriptionsByPluginID', current())/doap:license"/>
+      <xsl:call-template name="license"/>
       <xsl:apply-templates select="key('descriptionsByPluginID', current())/foaf:name"/>
     </div>
     <form>
