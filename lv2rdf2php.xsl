@@ -133,13 +133,11 @@ $instance = </xsl:text><xsl:value-of select="."/><xsl:text>;
   <xsl:call-template name="iterateOverPluginParameters"/>
 </xsl:template>
 
-
 <xsl:template name="handlePluginParameter">
   $nodeIDs['<xsl:value-of select="current()"/>'] = array();
   $nodeIDs['<xsl:value-of select="current()"/>']['instanceNo'] = $instance;
   $nodeIDs['<xsl:value-of select="current()"/>']['symbol'] = "<xsl:value-of select="key('descriptionsByNodeID', current())/lv2:symbol"/>";
   $nodeIDs['<xsl:value-of select="current()"/>']['value'] = "<xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>";
-  $nodeIDs['<xsl:value-of select="current()"/>']['uri'] = "<xsl:value-of select="/rdf:RDF/rdf:Description[lv2:port/@rdf:nodeID = current()]/@rdf:about"/>";
 </xsl:template>
 
 </xsl:stylesheet>
