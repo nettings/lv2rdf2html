@@ -40,8 +40,8 @@
       <xsl:comment>lv2rdf2html: unrecognized unit <xsl:copy-of select="."/>. Falling back to generic display.</xsl:comment>
       <xsl:value-of select="
         translate(
-          substring(
-            @rdf:resource, 39
+          substring-after(
+            'extensions/units#', @rdf:resource
           ), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         )
       "/>
