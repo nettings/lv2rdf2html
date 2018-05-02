@@ -31,10 +31,28 @@
 
 
 <xsl:template name="iterateOverPluginParameters">
-  <!-- iterate over all InputPorts -->
+  <!-- iterate over all InputPorts... -->
   <xsl:for-each select="
     key('descriptionsByPluginID', current())[ 
       rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
+    ]/@rdf:nodeID
+  "> 
+    <!-- ...then iterate over all those that are ControlPorts -->
+    <xsl:for-each select="
+      key('descriptionsByNodeID', current())[
+        rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#ControlPort'
+      ]/@rdf:nodeID
+    ">
+      <xsl:sort select="lv2:index"/>
+      <xsl:call-template name="handlePluginParameter"/>  
+    </xsl:for-each>
+  </xsl:for-each>
+</xsl:template>
+
+<xsl:template name="iterateOverPluginControlOutputs">
+  <xsl:for-each select="
+    key('descriptionsByPluginID', current())[ 
+      rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#OutputPort'
     ]/@rdf:nodeID
   "> 
     <xsl:for-each select="
@@ -43,7 +61,41 @@
       ]/@rdf:nodeID
     ">
       <xsl:sort select="lv2:index"/>
-      <xsl:call-template name="handlePluginParameter"/>  
+      <xsl:call-template name="handlePluginControlOutput"/>  
+    </xsl:for-each>
+  </xsl:for-each>
+</xsl:template>
+
+<xsl:template name="iterateOverPluginAudioInputs">
+  <xsl:for-each select="
+      key('descriptionsByPluginID', current())[ 
+      rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
+    ]/@rdf:nodeID
+  "> 
+    <xsl:for-each select="
+      key('descriptionsByNodeID', current())[
+        rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#AudioPort'
+      ]/@rdf:nodeID
+    ">
+      <xsl:sort select="lv2:index"/>
+      <xsl:call-template name="handlePluginAudioInput"/>  
+    </xsl:for-each>
+  </xsl:for-each>
+</xsl:template>
+
+<xsl:template name="iterateOverPluginAudioOutputs">
+  <xsl:for-each select="
+      key('descriptionsByPluginID', current())[ 
+      rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#OutputPort'
+    ]/@rdf:nodeID
+  "> 
+    <xsl:for-each select="
+      key('descriptionsByNodeID', current())[
+        rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#AudioPort'
+      ]/@rdf:nodeID
+    ">
+      <xsl:sort select="lv2:index"/>
+      <xsl:call-template name="handlePluginAudioOutput"/>  
     </xsl:for-each>
   </xsl:for-each>
 </xsl:template>

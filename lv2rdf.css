@@ -10,15 +10,17 @@ div#ajaxDebug {
   height: 15em;
   padding: 0.5ex;
   font-weight: bold;
-  background-color: #aaaaa5;
+  background-color: #cccccc;
   border: 4px outset #888880;
 }
 div#ajaxDebug a.X {
   position: absolute;
   color: #000000;
   text-decoration: none;
-  right: 1ex;
-  top: 0.1ex;
+  font-weight: normal;
+  right: 5px;
+  top: 0;
+  padding: 0ex 0.5ex 0.3ex 0.5ex;
   border: solid #444444 1px;
 }
 div#ajaxLog div {
@@ -26,7 +28,7 @@ div#ajaxLog div {
   overflow: auto;
   font-weight: normal;
   background-color: #ddddd2;
-  border: 4px inset #888880;
+  border: 2px solid black;
 
 }
 div#ajaxTX { height: 3em; }
@@ -36,11 +38,23 @@ div.pluginGUI {
   display: table;
   width: 35.5em;
   max-width: 35.5em;
+  border: 2px solid black;
 }
 div.pluginGUI h1 {
   display: table-row;
   font-size: 120%;
 }
+div.pluginGUI p {
+  margin: 0;
+}
+
+div.ports { display: table }
+div.ports div { display: table-row }
+div.ports div div { 
+  display: table-cell; 
+  padding: 0 1ex 0 0;
+}
+
 form { 
   display: row-group; 
   border-collapse: separate;
@@ -56,17 +70,18 @@ label {
 }
 div.input {
   display: table-cell;
+  margin: 0;
+  padding: 0;
 }
 div.slider {
   display: inline-block;
   width: 11em;
 }
 input.value, div.range {
+  display: inline-block;
   width: 6em;
   max-width: 6em;
   text-align: right;
-  margin-left: 1ex;
-  display: inline-block;
 }
 div.range {
   font-size: 60%;

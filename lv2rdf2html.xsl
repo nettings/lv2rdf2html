@@ -82,6 +82,20 @@
       <xsl:call-template name="license"/>
       <xsl:apply-templates select="key('descriptionsByPluginID', current())/foaf:name"/>
     </div>
+    <div class="ports">
+      <div>
+        <div>Inputs:</div>
+        <xsl:call-template name="iterateOverPluginAudioInputs"/>
+      </div>
+      <div>
+        <div>Outputs:</div>
+        <xsl:call-template name="iterateOverPluginAudioInputs"/>
+      </div>
+      <div>
+        <div>Control Outputs:</div>
+        <xsl:call-template name="iterateOverPluginControlOutputs"/>
+      </div>
+    </div>
     <form>
       <xsl:call-template name="iterateOverPluginParameters"/>
     </form>
@@ -141,6 +155,18 @@
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2units:unit"/>
     </div>
   </div>  
+</xsl:template>
+
+<xsl:template name="handlePluginControlOutput">
+  <div><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></div>
+</xsl:template>
+
+<xsl:template name="handlePluginAudioInput">
+  <div><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></div>
+</xsl:template>
+
+<xsl:template name="handlePluginAudioOutput">
+  <div><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></div>
 </xsl:template>
 
 
