@@ -146,13 +146,14 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
   <script type="text/javascript">
 $( function() {
   $( "#<xsl:value-of select="current()"/>_" ).slider({
-    value: round(log2lin(<xsl:value-of 
+    default: round(log2lin(<xsl:value-of 
       select="key('descriptionsByNodeID', current())/lv2:default"/>, <xsl:value-of 
       select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of
       select="key('descriptionsByNodeID', current())/lv2:maximum"/>), 2),
     min: 0,
     max: SLIDER_RESOLUTION,
     step: 1,
+    value: this.default,
     slide: function(event, ui) {
       var value = lin2log(ui.value, <xsl:value-of
         select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of 
@@ -179,12 +180,13 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
   <script type="text/javascript">
 $( function() {
   $( "#<xsl:value-of select="current()"/>_" ).slider({
-    value: <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>,
+    default: <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>,
     min:   <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>,
     max:   <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>,
     step:  (<xsl:value-of 
       select="key('descriptionsByNodeID', current())/lv2:maximum"/> - <xsl:value-of 
       select="key('descriptionsByNodeID', current())/lv2:minimum"/>) / SLIDER_RESOLUTION,
+    value: this.default,
     slide: function(event, ui) {
       var value = ui.value;
       $("#<xsl:value-of select="current()"/>").val(value);
@@ -202,7 +204,9 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
 
 
 <xsl:template name="setPluginDataFunc">
-    setPluginData( "<xsl:value-of select="current()"/>", value );
+    <xsl:text>setPluginData( "</xsl:text>
+    <xsl:value-of select="current()"/>
+    <xsl:text>", value );</xsl:text>
 </xsl:template>
 
 <xsl:template name="pluginParameterInput">
