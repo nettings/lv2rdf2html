@@ -22,7 +22,6 @@
 
 
 <xsl:template name="pluginParameterEnumeration">
-
 $( "#<xsl:value-of select="current()"/>_" ).change(function () {
   us = $( "#<xsl:value-of select="current()"/>_" );
   them = $( "#<xsl:value-of select="current()"/>" );
@@ -36,12 +35,10 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
   var value = us.val();
   them.value = value;
 });
-
 </xsl:template>
 
 
 <xsl:template name="pluginParameterCheckbox">
-
 $( "#<xsl:value-of select="current()"/>_" ).change(function () {
   us = $( "#<xsl:value-of select="current()"/>_" );
   them = $( "#<xsl:value-of select="current()"/>" );
@@ -65,7 +62,6 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
     //console.log("#<xsl:value-of select="current()"/> unchecked");
   }
 });
-
 </xsl:template>
 
 
@@ -87,7 +83,6 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
 
 
 <xsl:template name="pluginParameterSliderLog">
-
 $( function() {
   $( "#<xsl:value-of select="current()"/>_" ).slider({
     default: round(log2lin(<xsl:value-of 
@@ -116,12 +111,10 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
     select="key('descriptionsByNodeID', current())/lv2:maximum"/>));
   <xsl:call-template name="setPluginDataFunc"/>
 });
-
 </xsl:template>
 
 
 <xsl:template name="pluginParameterSliderLin">
-
 $( function() {
   $( "#<xsl:value-of select="current()"/>_" ).slider({
     default: <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>,
@@ -143,7 +136,6 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
   $( "#<xsl:value-of select="current()"/>_" ).slider("value", value);
   <xsl:call-template name="setPluginDataFunc"/>
 });
-
 </xsl:template>
 
 <xsl:template name="setPluginDataFunc">

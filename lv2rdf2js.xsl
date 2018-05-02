@@ -137,27 +137,30 @@ function log2lin(value, min, max) {
   return (Math.log(value) - minval) / ratio;
 }
 
+// execute the generated code below once the page DOM tree is ready: 
+
+$( document ).ready(function() {
+
 </xsl:text>
 <xsl:call-template name="iterateOverPlugins"/>
 <xsl:text>
+init();
+
+});
  
-$( init );  
   </xsl:text>
 </xsl:template>
 
 <xsl:template name="handlePlugin">
   <xsl:text>
-// </xsl:text><xsl:value-of select="key('descriptionsByPluginID', current())/@rdf:about"/>
+// </xsl:text>
+  <xsl:value-of select="key('descriptionsByPluginID', current())/@rdf:about"/>
   <xsl:text>
 </xsl:text>
   <xsl:call-template name="iterateOverPluginParameters"/>
 </xsl:template>
 
 <xsl:template name="handlePluginParameter">
-  <xsl:text>
-// </xsl:text><xsl:value-of select="current()"/>
-  <xsl:text>
-</xsl:text>
   <xsl:call-template name="selectPluginParameterHandler"/>
 </xsl:template>
 
