@@ -37,7 +37,7 @@
 <xsl:include href="iterators.xsl"/>
 
 
-<xsl:template match="/">
+<xsl:template match="/*">
 
   <xsl:processing-instruction name="php">
 define("HOST", '<xsl:value-of select="$host"/>');
@@ -55,8 +55,7 @@ $res = "";
 $nodeIDs = array(); 
 $instance = 0;
 
-    <xsl:apply-templates/>
-
+  <xsl:call-template name="iterateOverPlugins"/>
 
 if (isset($_POST['nodeID'])) {
    // Be sure to sanitize user-generated input. We assume using it as an array index is safe.
@@ -127,15 +126,9 @@ fclose($fp);
 </xsl:processing-instruction>
 </xsl:template>
 
-
-<xsl:template match="/rdf:RDF">
-  <xsl:call-template name="iterateOverPlugins"/>
-</xsl:template> 
-
-
 <xsl:template name="handlePlugin">
   <xsl:text>
-$instance++;
+$instance = </xsl:text><xsl:value-of select="."/><xsl:text>;
 </xsl:text>
   <xsl:call-template name="iterateOverPluginParameters"/>
 </xsl:template>
