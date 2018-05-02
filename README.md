@@ -16,83 +16,20 @@ LV2 metadata must be converted to XML first.
 ## Usage
 
 ### Automatic processing with generate.sh
-The [generate.sh](generate.sh) script operates on a mod-host command history, and
+The [make.sh](make.sh) script operates on a mod-host command history, and
 automatically generates and deploys all required components. To use it, please edit the settings in
 [lv2rdf.conf](lv2rdf.conf).
 
 The generator script will then
-* Collect the desired plugin documentation in a temporary Turtle file using lv2info
-* Convert the turtle file to a temporary RDF/XML file using [rapper](http://librdf.org/raptor/rapper.html)
+* Collect the desired plugin documentation in temporary Turtle files using lv2info
+* Convert the turtle files to a temporary RDF/XML file using [rapper](http://librdf.org/raptor/rapper.html)
 (part of raptor/Redland, this is what I use for testing). 
-* Generate, prettyprint and deploy a HTML file
-* Generate and deploy a corresponding Javascript file
-* Generate and deploy the PHP AJAX handler
-* Deploy a corresponding (minimal) CSS file
-
-The deploy.sh script is deprecated and does not reflect the current state of
-affairs.
-
-### Manual processing on the command line
-
-For development and debugging, the generation process can be done entirely
-manually.
-* Gather URI information of available plugins:
-```
-#~> lv2ls
-```
-* Collect the desired plugin documentation in a Turtle file (lv2info appends to a file):
-```
-#~> rm output.ttl
-#~> lv2info -p output.ttl http://gareus.org/oss/lv2/fil4#stereo
-#~> lv2info -p output.ttl http://calf.sourceforge.net/plugins/Compressor
-    ...
-```
-* Convert the turtle file to RDF/XML:
-  * Using [rapper](http://librdf.org/raptor/rapper.html) (part of
-    raptor/Redland, this is what I use for testing):
-  ```
-  #~> rapper -o rdfxml -i turtle output.ttl > output.xml
-  ```
-  * Using [rdf2rdf](http://www.l3s.de/~minack/rdf2rdf/) (I'm testing this
-every once in a while, but expect hiccups):
-  ```
-  #~> java -jar rdf2rdf-1.0.1-2.3.1.jar output.ttl output.xml
-  ```
-* Generate the HTML page and prettyprint:
-```
-#~> xsltproc \
-	--stringparam jsuri lv2rdf.js \ 
-	--stringparam cssuri lv2rdf.css \
-	lv2rdf2html.xsl output.xml \
-	| xsltproc xml-prettyprint.xsl - \
-		> lv2rdf.html
-```
-* Generate the PHP AJAX handler:
-```
-#~> xsltproc \
-	--stringparam host "<your mod-host hostname>" \
-	--param port "<the port mod-host is listening on>" \
-	lv2rdf2php.xsl output.xml \
-	> lv2rdf.php
-```
-* Generate the Javascript code:
-```
-#~> xsltproc \
-	--stringparam ajaxuri lv2rdf.php \
-	lv2rdf2js.xsl output.xml > lv2rdf.js
-```
-
-* Deploy everything to a PHP-enabled webserver, including the CSS and
-Javascript. 
-The [deployment script](deploy.sh) tries to be clever about this
-and auto-deploys whenever you modify a file on disk. It is currently broken
-and deprecated.
-* Generate the Javascript code:
-```
-#~> xsltproc \
-	--stringparam ajaxuri lv2rdf.php \
-	lv2rdf2js.xsl output.xml > lv2rdf.js
-```
+* Tag all generated identifiers in the RDF/XML with their plugin ID no. to
+make them globally unique
+* Generate and prettyprint an XHTML user interface file
+* Generate corresponding Javascript and CSS files
+* Generate the server-side PHP AJAX handler
+* optionally deploy them to the web server root
 
 ## Requirements
 
@@ -103,10 +40,10 @@ and deprecated.
   * saxon (currently unsupported unless you process manually),
 * a Turtle-to-XML RDF converter, such as
   * [rapper](http://librdf.org/raptor/rapper.html) or
-  * [rdf2rdf](http://www.l3s.de/~minack/rdf2rdf/).
+  * [rdf2rdf](http://www.l3s.de/~minack/rdf2rdf/) (currently unsupported
+    unless you process manually),
 * [mod-host](https://github.com/moddevices/mod-host), and
 * a PHP-capable webserver
-* (optional) inotify-tools for automated deployment
 
 ## Status
 
