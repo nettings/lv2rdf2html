@@ -110,45 +110,7 @@
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/rdfs:comment"/>
     </label>
     <div class="input">
-      <xsl:choose>
-        <!-- handle enumeration of options: dropdown -->
-        <xsl:when test="
-          key('descriptionsByNodeID', current())/lv2:portProperty/@rdf:resource 
-          = 'http://lv2plug.in/ns/lv2core#enumeration'
-        ">
-          <xsl:call-template name="pluginParameterEnumeration"/>
-        </xsl:when>
-        <!-- handle boolean option: checkbox -->
-        <xsl:when test="
-          key('descriptionsByNodeID', current())/lv2:portProperty/@rdf:resource 
-          = 'http://lv2plug.in/ns/lv2core#toggled'
-        ">
-          <xsl:call-template name="pluginParameterCheckbox"/>
-        </xsl:when>
-        <!-- handle decimal value: jQuery-ui slider -->
-        <xsl:when test="
-          key('descriptionsByNodeID', current())/lv2:default/@rdf:datatype 
-          = 'http://www.w3.org/2001/XMLSchema#decimal'
-        ">
-          <xsl:call-template name="pluginParameterSlider"/>
-        </xsl:when>
-        <!-- handle integer range > 2: jQuery-ui slider -->          
-        <xsl:when test="
-          key('descriptionsByNodeID', current())/lv2:default/@rdf:datatype 
-          = 'http://www.w3.org/2001/XMLSchema#integer'
-          and (
-            ( key('descriptionsByNodeID', current())/lv2:maximum
-              - key('descriptionsByNodeID', current())/lv2:minimum
-            ) > 2
-          )
-        ">
-          <xsl:call-template name="pluginParameterSlider"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:comment>lv2rdf2html: unrecognized parameter type, falling back to data entry field.</xsl:comment>
-          <xsl:call-template name="pluginParameterInput"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:call-template name="selectPluginParameterHandler"/>
     </div>
     <div class="unit">
       <xsl:text>&#8203;</xsl:text>
@@ -168,6 +130,5 @@
 <xsl:template name="handlePluginAudioOutput">
   <div><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></div>
 </xsl:template>
-
 
 </xsl:stylesheet>
