@@ -22,46 +22,46 @@
 
 
 <xsl:template name="pluginParameterEnumeration">
-$( "#<xsl:value-of select="current()"/>_" ).change(function () {
-  us = $( "#<xsl:value-of select="current()"/>_" );
-  them = $( "#<xsl:value-of select="current()"/>" );
-  var value = us.val();
-  them.val(value);
+  $( "#<xsl:value-of select="current()"/>_" ).change(function () {
+    us = $( "#<xsl:value-of select="current()"/>_" );
+    them = $( "#<xsl:value-of select="current()"/>" );
+    var value = us.val();
+    them.val(value);
   <xsl:call-template name="setPluginDataFunc"/>
-});
-$( "#<xsl:value-of select="current()"/>" ).change(function () {
-  us = $( "#<xsl:value-of select="current()"/>" );
-  them = $( "#<xsl:value-of select="current()"/>_" );
-  var value = us.val();
-  them.value = value;
-});
+  });
+  $( "#<xsl:value-of select="current()"/>" ).change(function () {
+    us = $( "#<xsl:value-of select="current()"/>" );
+    them = $( "#<xsl:value-of select="current()"/>_" );
+    var value = us.val();
+    them.value = value;
+  });
 </xsl:template>
 
 
 <xsl:template name="pluginParameterCheckbox">
-$( "#<xsl:value-of select="current()"/>_" ).change(function () {
-  us = $( "#<xsl:value-of select="current()"/>_" );
-  them = $( "#<xsl:value-of select="current()"/>" );
-  if (us.is(":checked")) {
-    them.val(1);
-  } else {
-    them.val(0);
-  }
-  var value = them.val();
-  <xsl:call-template name="setPluginDataFunc"/>
-});
-$( "#<xsl:value-of select="current()"/>" ).change(function () {
-  us = $( "#<xsl:value-of select="current()"/>" );
-  them = $( "#<xsl:value-of select="current()"/>_" );
-  var value = us.val();
-  if (value == 1) {
-    them.prop('checked', true);
-    //console.log("#<xsl:value-of select="current()"/> checked");
-  } else {
-    them.removeAttr('checked', false);
-    //console.log("#<xsl:value-of select="current()"/> unchecked");
-  }
-});
+  $( "#<xsl:value-of select="current()"/>_" ).change(function () {
+    us = $( "#<xsl:value-of select="current()"/>_" );
+    them = $( "#<xsl:value-of select="current()"/>" );
+    if (us.is(":checked")) {
+      them.val(1);
+    } else {
+      them.val(0);
+    }
+    var value = them.val();
+    <xsl:call-template name="setPluginDataFunc"/>
+  });
+  $( "#<xsl:value-of select="current()"/>" ).change(function () {
+    us = $( "#<xsl:value-of select="current()"/>" );
+    them = $( "#<xsl:value-of select="current()"/>_" );
+    var value = us.val();
+    if (value == 1) {
+      them.prop('checked', true);
+      //console.log("#<xsl:value-of select="current()"/> checked");
+    } else {
+      them.removeAttr('checked', false);
+      //console.log("#<xsl:value-of select="current()"/> unchecked");
+    }
+  });
 </xsl:template>
 
 
@@ -101,14 +101,14 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
       <xsl:call-template name="setPluginDataFunc"/>               
     }        
   });
-$( "#<xsl:value-of select="current()"/>" ).change(function () {
-  var value = this.value;
-  $("#<xsl:value-of
-    select="current()"/>_").slider("value", log2lin(value, <xsl:value-of 
-    select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of
-    select="key('descriptionsByNodeID', current())/lv2:maximum"/>));
-  <xsl:call-template name="setPluginDataFunc"/>
-});
+  $( "#<xsl:value-of select="current()"/>" ).change(function () {
+    var value = this.value;
+    $("#<xsl:value-of
+      select="current()"/>_").slider("value", log2lin(value, <xsl:value-of 
+      select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of
+      select="key('descriptionsByNodeID', current())/lv2:maximum"/>));
+    <xsl:call-template name="setPluginDataFunc"/>
+  });
 </xsl:template>
 
 
@@ -128,11 +128,11 @@ $( "#<xsl:value-of select="current()"/>" ).change(function () {
     <xsl:call-template name="setPluginDataFunc"/>
     }                       
   });
-$( "#<xsl:value-of select="current()"/>" ).change(function () {
-  var value = this.value;
-  $( "#<xsl:value-of select="current()"/>_" ).slider("value", value);
-  <xsl:call-template name="setPluginDataFunc"/>
-});
+  $( "#<xsl:value-of select="current()"/>" ).change(function () {
+    var value = this.value;
+    $( "#<xsl:value-of select="current()"/>_" ).slider("value", value);
+    <xsl:call-template name="setPluginDataFunc"/>
+  });
 </xsl:template>
 
 <xsl:template name="pluginParameterInput">

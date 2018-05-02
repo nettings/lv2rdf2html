@@ -144,7 +144,7 @@ $( document ).ready(function() {
 </xsl:text>
 <xsl:call-template name="iterateOverPlugins"/>
 <xsl:text>
-init();
+  init();
 
 });
  
@@ -156,16 +156,16 @@ init();
 // </xsl:text>
   <xsl:value-of select="key('descriptionsByPluginID', current())/@rdf:about"/>
   <xsl:text>
-
 </xsl:text>
   <xsl:call-template name="iterateOverPluginParameters"/>
 </xsl:template>
 
 <xsl:template name="handlePluginParameter">
-  <xsl:text>$( "label[for='</xsl:text><xsl:value-of select="current()"/><xsl:text>']" ).dblclick(function() {
-  $( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>" ).val($( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>_" ).data('default'));
-  $( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>" ).change();
-});
+  <xsl:text>
+  $( "label[for='</xsl:text><xsl:value-of select="current()"/><xsl:text>']" ).dblclick(function() {
+    $( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>" ).val($( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>_" ).data('default'));
+    $( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>" ).change();
+  });
 </xsl:text>
   <xsl:call-template name="selectPluginParameterHandler"/>
 </xsl:template>
