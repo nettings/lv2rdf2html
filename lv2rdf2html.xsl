@@ -101,7 +101,7 @@
 <xsl:template name="handlePluginParameter">
   <fieldset>
     <label for="{current()}">
-      <xsl:call-template name="rangeTooltip"/>
+      <xsl:call-template name="tooltip"/>
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2:name"/>
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/rdfs:comment"/>
     </label>
