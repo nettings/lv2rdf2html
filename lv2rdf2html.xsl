@@ -30,6 +30,7 @@
 />
 
 <xsl:include href="iterators.xsl"/>
+<xsl:include href="selectors.xsl"/>
 <xsl:include href="gui-elements-html.xsl"/>
 <xsl:include href="gui-helpers.xsl"/>
 

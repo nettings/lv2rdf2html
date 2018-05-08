@@ -25,6 +25,7 @@
 />
 
 <xsl:include href="iterators.xsl"/>
+<xsl:include href="selectors.xsl"/>
 <xsl:include href="gui-elements-js.xsl"/>
 
 <xsl:param name="ajaxuri"/>
