@@ -41,6 +41,7 @@
 <xsl:param name="jqueryuiuri"/>
 <xsl:param name="jqueryuiintegrity"/>
 
+
 <xsl:template match="/*">
 <html> 
   <head>
@@ -80,6 +81,7 @@
 </html>
 </xsl:template>
 
+
 <xsl:template name="handlePlugin">
   <section class="pluginGUI" id="plugin{.}">
     <h1><xsl:value-of select="key('descriptionsByPluginID', current())/doap:name"/></h1>
@@ -89,14 +91,24 @@
         <xsl:apply-templates select="key('descriptionsByPluginID', current())/foaf:name"/>
       </div>
       <div class="ports">
-        <p>Audio inputs: <xsl:call-template name="iterateOverPluginAudioInputs"/></p>
+        <p>Audio inputs:
+          <xsl:call-template name="iterateOverPluginAudioInputs">
+            <xsl:with-param name="pluginID" select="."/>
+          </xsl:call-template>
+        </p>
       </div>
       <form>
         <xsl:call-template name="iterateOverPluginParameters"/>
       </form>
       <div class="ports">
-        <p>Control outputs: <xsl:call-template name="iterateOverPluginControlOutputs"/></p>
-        <p>Audio outputs: <xsl:call-template name="iterateOverPluginAudioOutputs"/></p>
+        <p>Control outputs:
+          <xsl:call-template name="iterateOverPluginControlOutputs"/>
+        </p>
+        <p>Audio outputs:
+          <xsl:call-template name="iterateOverPluginAudioOutputs">
+            <xsl:with-param name="pluginID" select="."/>
+          </xsl:call-template>
+        </p>
       </div>
     </div>
   </section>    
@@ -115,22 +127,28 @@
   </fieldset>  
 </xsl:template>
 
+
 <xsl:template name="handlePluginControlOutput">
   <span title="{key('descriptionsByNodeID', current())/lv2:symbol}">
     <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/>
   </span>
 </xsl:template>
 
+
 <xsl:template name="handlePluginAudioInput">
-  <span title="{key('descriptionsByNodeID', current())/lv2:symbol}">
+  <xsl:param name="pluginID"/>
+  <span title="effect_{$pluginID}:{key('descriptionsByNodeID', current())/lv2:symbol}">
     <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/>
   </span>
 </xsl:template>
 
+
 <xsl:template name="handlePluginAudioOutput">
-  <span title="{key('descriptionsByNodeID', current())/lv2:symbol}">
+  <xsl:param name="pluginID"/>
+  <span title="effect_{$pluginID}:{key('descriptionsByNodeID', current())/lv2:symbol}">
     <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/>
   </span>
 </xsl:template>
+
 
 </xsl:stylesheet>

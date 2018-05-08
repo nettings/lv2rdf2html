@@ -70,6 +70,7 @@
 
 
 <xsl:template name="iterateOverPluginAudioInputs">
+  <xsl:param name="pluginID"/>
   <xsl:for-each select="
       key('descriptionsByPluginID', current())[ 
       rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#InputPort'
@@ -81,7 +82,9 @@
       ]/@rdf:nodeID
     ">
       <xsl:sort select="lv2:index"/>
-      <xsl:call-template name="handlePluginAudioInput"/>  
+      <xsl:call-template name="handlePluginAudioInput">
+        <xsl:with-param name="pluginID" select="$pluginID"/>
+      </xsl:call-template>
     </xsl:for-each>
   </xsl:for-each>
 </xsl:template>
