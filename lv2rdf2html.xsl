@@ -62,8 +62,8 @@
     <main id="pluginList">
       <xsl:call-template name="iterateOverPlugins"/> 
     </main>
-    <footer id="ajaxDebug">
-      <section>
+    <footer>
+      <section id="ajaxDebug">
         <h1>AJAX Debugging</h1>
         <div id="ajaxLog">
           <div id="ajaxTX">

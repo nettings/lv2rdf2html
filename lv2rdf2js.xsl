@@ -153,11 +153,13 @@ $( document ).ready(function() {
     active: false
   });
   $( "#ajaxDebug" ).accordion({
-    header: "section h1",
+    header: "h1",
     collapsible: true,
-    active: false
+    event: "dblclick",
+    active: 0
   }).draggable({
     appendTo: "body",
+    containment: "window",
     stop: function(event, ui) {
         var top = ui.helper.offset(top) - $(window).scrollTop();
         ui.helper.css('position', 'fixed');
