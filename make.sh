@@ -32,7 +32,7 @@ function failure {
 }
 
 function usage {
-  echo Usage: $0 [build\|install\|clean]
+  echo Usage: $0 [build\|download\|install\|clean]
   echo
   echo \*build\* takes a mod-host command history file from \'$MODHOSTCONF\' 
   echo \(the one used to create the plugin graph\). 
@@ -42,13 +42,13 @@ function usage {
   echo XSL files are expected in \'$XSLDIR\', generated files will be  
   echo written out to \'$BUILDDIR\'. 
   echo
-  echo \*download\* will download the desired JQuery and JQueryUI versions.
+  echo \*download\* will make a local copy of the desired JQuery and JQueryUI versions.
   echo 
   echo \*install\* will deploy the built interface files to the configured locations.
   echo
   echo \*clean\* will wipe intermediary files from \'$BUILDDIR\'.
   echo
-  echo Source and target paths can be configured in \'lv2rdf.conf\'.
+  echo Source and target paths as well as JQuery versions can be configured in \'lv2rdf.conf\'.
   echo
   exit 255
 }
