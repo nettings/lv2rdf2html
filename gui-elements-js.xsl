@@ -22,6 +22,8 @@
 
 
 <xsl:template name="pluginParameterEnumeration">
+  $( "#<xsl:value-of select="current()"/>" ).data('default', <xsl:value-of 
+      select="key('descriptionsByNodeID', current())/lv2:default"/>);
   $( "#<xsl:value-of select="current()"/>_" ).change(function () {
     us = $( "#<xsl:value-of select="current()"/>_" );
     them = $( "#<xsl:value-of select="current()"/>" );
@@ -39,6 +41,8 @@
 
 
 <xsl:template name="pluginParameterCheckbox">
+  $( "#<xsl:value-of select="current()"/>" ).data('default', <xsl:value-of 
+      select="key('descriptionsByNodeID', current())/lv2:default"/>);
   $( "#<xsl:value-of select="current()"/>_" ).change(function () {
     us = $( "#<xsl:value-of select="current()"/>_" );
     them = $( "#<xsl:value-of select="current()"/>" );
@@ -83,10 +87,7 @@
 
 
 <xsl:template name="pluginParameterSliderLog">
-  $( "#<xsl:value-of select="current()"/>_" ).data('default', round(log2lin(<xsl:value-of 
-      select="key('descriptionsByNodeID', current())/lv2:default"/>, <xsl:value-of
-      select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of
-      select="key('descriptionsByNodeID', current())/lv2:maximum"/>), 2));
+  $( "#<xsl:value-of select="current()"/>" ).data('default', <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>);
   $( "#<xsl:value-of select="current()"/>_" ).slider({
     value: $( "#<xsl:value-of select="current()"/>_" ).data('default'),
     min: 0,
@@ -97,7 +98,7 @@
         select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of 
         select="key('descriptionsByNodeID', current())/lv2:maximum"/>);
       $("#<xsl:value-of
-        select="current()"/>").val(round(value, 2));
+        select="current()"/>").val(value.toFixed(NUMBOX_DECIMALS));
       <xsl:call-template name="setPluginDataFunc"/>               
     }        
   });
@@ -113,7 +114,7 @@
 
 
 <xsl:template name="pluginParameterSliderLin">
-  $( "#<xsl:value-of select="current()"/>_" ).data('default', <xsl:value-of 
+  $( "#<xsl:value-of select="current()"/>" ).data('default', <xsl:value-of 
       select="key('descriptionsByNodeID', current())/lv2:default"/>);
   $( "#<xsl:value-of select="current()"/>_" ).slider({
     value: $( "#<xsl:value-of select="current()"/>_" ).data('default'),
@@ -124,7 +125,7 @@
       select="key('descriptionsByNodeID', current())/lv2:minimum"/>) / SLIDER_RESOLUTION,
     slide: function(event, ui) {
       var value = ui.value;
-      $("#<xsl:value-of select="current()"/>").val(value);
+      $("#<xsl:value-of select="current()"/>").val(value.toFixed(NUMBOX_DECIMALS));
     <xsl:call-template name="setPluginDataFunc"/>
     }                       
   });

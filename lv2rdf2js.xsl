@@ -38,6 +38,7 @@
 */
 
 const SLIDER_RESOLUTION=1000;
+const NUMBOX_DECIMALS=4;
 const CONTROLLER = "</xsl:text><xsl:value-of select="$ajaxuri"/><xsl:text>"
 
 const LOG_TX = '#ajaxTX span';
@@ -162,13 +163,13 @@ $( document ).ready(function() {
 </xsl:template>
 
 <xsl:template name="handlePluginParameter">
+  <xsl:call-template name="selectPluginParameterHandler"/>
   <xsl:text>
   $( "label[for='</xsl:text><xsl:value-of select="current()"/><xsl:text>']" ).dblclick(function() {
-    $( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>" ).val($( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>_" ).data('default'));
+    $( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>" ).val($( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>" ).data('default').toFixed(NUMBOX_DECIMALS));
     $( "#</xsl:text><xsl:value-of select="current()"/><xsl:text>" ).change();
   });
 </xsl:text>
-  <xsl:call-template name="selectPluginParameterHandler"/>
 </xsl:template>
 
 </xsl:stylesheet>
