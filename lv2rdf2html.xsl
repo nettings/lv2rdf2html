@@ -41,10 +41,10 @@
   <head>
     <meta charset="utf-8"/>
     <script
-      src="https://code.jquery.com/jquery-3.2.1.min.js"
-      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      src="https://code.jquery.com/jquery-3.3.1.js"
+      integrity="sha384-fJU6sGmyn07b+uD1nMk7/iSb4yvaowcueiQhfVgQuD98rfva8mcr1eSvjchfpMrH"
       crossorigin="anonymous">&#8203;
-    </script>   
+    </script>
     <script
       src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
       integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
