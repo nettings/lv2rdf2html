@@ -111,15 +111,21 @@
 </xsl:template>
 
 <xsl:template name="handlePluginControlOutput">
-  <span><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></span>
+  <span title="{key('descriptionsByNodeID', current())/lv2:symbol}">
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/>
+  </span>
 </xsl:template>
 
 <xsl:template name="handlePluginAudioInput">
-  <span><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></span>
+  <span title="{key('descriptionsByNodeID', current())/lv2:symbol}">
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/>
+  </span>
 </xsl:template>
 
 <xsl:template name="handlePluginAudioOutput">
-  <span><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></span>
+  <span title="{key('descriptionsByNodeID', current())/lv2:symbol}">
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/>
+  </span>
 </xsl:template>
 
 </xsl:stylesheet>

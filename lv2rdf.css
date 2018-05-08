@@ -21,6 +21,12 @@ div.info, div.ports {
 div.info p, div.ports p {
   padding: 0 0 0 1em;
 }
+div.ports p span {
+  display: inline-block;
+  border: 1px solid black;
+  padding: 0 1ex;
+  margin: 0 1ex;
+}
 fieldset {
   padding: 0;
   margin: 0;
