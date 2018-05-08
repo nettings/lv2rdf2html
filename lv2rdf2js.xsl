@@ -156,6 +156,13 @@ $( document ).ready(function() {
     header: "section h1",
     collapsible: true,
     active: false
+  }).draggable({
+    appendTo: "body",
+    stop: function(event, ui) {
+        var top = ui.helper.offset(top) - $(window).scrollTop();
+        ui.helper.css('position', 'fixed');
+        ui.helper.css('top', top+"px");
+    }
   });
   init();
 
