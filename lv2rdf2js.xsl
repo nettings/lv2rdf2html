@@ -144,6 +144,7 @@ $( document ).ready(function() {
 </xsl:text>
 <xsl:call-template name="iterateOverPlugins"/>
 <xsl:text>
+  $( document ).tooltip();
   init();
 
 });

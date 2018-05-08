@@ -51,13 +51,17 @@
 
 <!-- matches plugin comments -->
 <xsl:template match="rdf:Description[@rdf:about]/rdfs:comment">
+<!--
   <p><xsl:value-of select="."/></p>
+-->
 </xsl:template>
 
 <!-- matches plugin parameter comments -->
 <xsl:template match="rdf:Description[@rdf:nodeID]/rdfs:comment">
+<!--
   <xsl:text> </xsl:text>
   <abbr title="{.}">&#8505;</abbr>
+-->
 </xsl:template>
 
 <xsl:template name="license">

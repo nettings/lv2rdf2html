@@ -24,7 +24,9 @@
 <xsl:template name="pluginParameterEnumeration">
   <select 
     id="{current()}_" 
-    name="{key('descriptionsByNodeID', current())/lv2:symbol}_">
+    name="{key('descriptionsByNodeID', current())/lv2:symbol}_"
+  >
+    <xsl:call-template name="tooltip"/>
     <!-- iterate over all descriptions belonging to the current nodeID. --> 
     <xsl:for-each select="key('descriptionsByNodeID', current())[lv2:scalePoint]">
       <option value="{key('descriptionsByNodeID', lv2:scalePoint/@rdf:nodeID)/rdf:value}">
@@ -55,6 +57,7 @@
     type="checkbox" 
     value="1"
   >
+    <xsl:call-template name="tooltip"/>
     <xsl:if test="
       key('descriptionsByNodeID', current())/lv2:default 
       and 
@@ -73,7 +76,10 @@
 
 
 <xsl:template name="pluginParameterSlider">
-  <div class="slider" id="{current()}_">&#8203;</div>
+  <div class="slider" id="{current()}_">
+    <xsl:call-template name="tooltip"/>
+    &#8203;
+  </div>
   <input 
     id="{current()}" 
     class="value" 
@@ -82,7 +88,9 @@
     value="{key('descriptionsByNodeID', current())/lv2:default}"
     min="{key('descriptionsByNodeID', current())/lv2:minimum}"
     max="{key('descriptionsByNodeID', current())/lv2:maximum}"
-  />
+  >
+    <xsl:call-template name="tooltip"/>
+  </input>
   <xsl:choose>
     <!-- logarithmic slider -->
     <xsl:when test="
@@ -116,7 +124,9 @@
     value="{key('descriptionsByNodeID', current())/lv2:default}"
     min="{key('descriptionsByNodeID', current())/lv2:minimum}"
     max="{key('descriptionsByNodeID', current())/lv2:maximum}"
-  />  
+  >
+    <xsl:call-template name="tooltip"/>
+  </input>
   <div class="range">
     <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
     <xsl:text> &#8804; x &#8804; </xsl:text>
@@ -124,5 +134,12 @@
   </div>    
 </xsl:template>
 
+<xsl:template name="tooltip">
+  <xsl:if test="key('descriptionsByNodeID', current())/rdfs:comment">
+    <xsl:attribute name="title">
+      <xsl:value-of select="key('descriptionsByNodeID', current())/rdfs:comment"/>
+    </xsl:attribute>
+  </xsl:if>
+</xsl:template>
 
 </xsl:stylesheet>
