@@ -86,7 +86,7 @@
     min="{key('descriptionsByNodeID', current())/lv2:minimum}"
     max="{key('descriptionsByNodeID', current())/lv2:maximum}"
   >
-    <xsl:call-template name="tooltip"/>
+    <xsl:call-template name="rangeTooltip"/>
   </input>
   <xsl:choose>
     <!-- logarithmic slider -->
@@ -124,11 +124,6 @@
   >
     <xsl:call-template name="tooltip"/>
   </input>
-  <div class="range">
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
-    <xsl:text> &#8804; x &#8804; </xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>   
-  </div>    
 </xsl:template>
 
 <xsl:template name="tooltip">
@@ -137,6 +132,14 @@
       <xsl:value-of select="key('descriptionsByNodeID', current())/rdfs:comment"/>
     </xsl:attribute>
   </xsl:if>
+</xsl:template>
+
+<xsl:template name="rangeTooltip">
+  <xsl:attribute name="title">
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
+    <xsl:text> &#8804; x &#8804; </xsl:text>
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
+  </xsl:attribute>
 </xsl:template>
 
 </xsl:stylesheet>
