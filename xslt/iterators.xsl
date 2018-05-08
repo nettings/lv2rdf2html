@@ -91,6 +91,7 @@
 
 
 <xsl:template name="iterateOverPluginAudioOutputs">
+  <xsl:param name="pluginID"/>
   <xsl:for-each select="
       key('descriptionsByPluginID', current())[ 
       rdf:type/@rdf:resource = 'http://lv2plug.in/ns/lv2core#OutputPort'
