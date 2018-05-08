@@ -29,13 +29,13 @@
     them = $( "#<xsl:value-of select="current()"/>" );
     var value = us.val();
     them.val(value);
-  <xsl:call-template name="setPluginDataFunc"/>
   });
   $( "#<xsl:value-of select="current()"/>" ).change(function () {
     us = $( "#<xsl:value-of select="current()"/>" );
     them = $( "#<xsl:value-of select="current()"/>_" );
     var value = us.val();
     them.value = value;
+  <xsl:call-template name="setPluginDataFunc"/>
   });
 </xsl:template>
 

@@ -66,7 +66,8 @@
 
 <xsl:template name="license">
   <xsl:for-each select="key('descriptionsByPluginID', current())/doap:license">
-    <p>License: 
+    <p>
+      <xsl:text>License: </xsl:text> 
       <xsl:choose>
         <xsl:when test="not(@rdf:resource)">
           <xsl:text>not specified</xsl:text>

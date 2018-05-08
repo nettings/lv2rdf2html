@@ -145,7 +145,12 @@ $( document ).ready(function() {
 </xsl:text>
 <xsl:call-template name="iterateOverPlugins"/>
 <xsl:text>
+
   $( document ).tooltip();
+  $( "#pluginList" ).accordion({
+    header: "section.pluginGUI h1",
+    collapsible: true
+  });
   init();
 
 });

@@ -55,7 +55,10 @@
     <link rel="stylesheet" href="{$cssuri}" />
   </head>
   <body>
-    <div id="ajaxDebug">
+    <main id="pluginList">
+      <xsl:call-template name="iterateOverPlugins"/> 
+    </main>
+    <footer id="ajaxDebug">
       AJAX Debugging: <a class="X" href="#" onclick="javascript:$('#ajaxDebug').css('display','none')">x</a>
       <div id="ajaxLog">
         <div id="ajaxTX">
@@ -65,70 +68,55 @@
           Received: <span>&#8203;</span>
         </div>
       </div>
-    </div>
-    <div>
-      <xsl:call-template name="iterateOverPlugins"/> 
-    </div>
+    </footer>
   </body>
 </html>
 </xsl:template>
 
 <xsl:template name="handlePlugin">
-  <div class="pluginGUI" id="plugin{.}">
-    <h1>
-      <xsl:value-of select="key('descriptionsByPluginID', current())/doap:name"/>
-    </h1>
-    <div class="info">
-      <xsl:call-template name="license"/>
-      <xsl:apply-templates select="key('descriptionsByPluginID', current())/foaf:name"/>
-    </div>
-    <div class="ports">
-      <div>
-        <div>Inputs:</div>
-        <xsl:call-template name="iterateOverPluginAudioInputs"/>
+  <section class="pluginGUI" id="plugin{.}">
+    <h1><xsl:value-of select="key('descriptionsByPluginID', current())/doap:name"/></h1>
+    <div>
+      <div class="info">
+        <xsl:call-template name="license"/>
+        <xsl:apply-templates select="key('descriptionsByPluginID', current())/foaf:name"/>
       </div>
-      <div>
-        <div>Outputs:</div>
-        <xsl:call-template name="iterateOverPluginAudioInputs"/>
+      <div class="ports">
+        <p>Audio inputs: <xsl:call-template name="iterateOverPluginAudioInputs"/></p>
       </div>
-      <div>
-        <div>Control Outputs:</div>
-        <xsl:call-template name="iterateOverPluginControlOutputs"/>
+      <form>
+        <xsl:call-template name="iterateOverPluginParameters"/>
+      </form>
+      <div class="ports">
+        <p>Control outputs: <xsl:call-template name="iterateOverPluginControlOutputs"/></p>
+        <p>Audio outputs: <xsl:call-template name="iterateOverPluginAudioOutputs"/></p>
       </div>
     </div>
-    <form>
-      <xsl:call-template name="iterateOverPluginParameters"/>
-    </form>
-  </div>    
+  </section>    
 </xsl:template>
 
 
 <xsl:template name="handlePluginParameter">
-  <div class="formItem ">
+  <fieldset>
     <label for="{current()}">
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2:name"/>
       <xsl:apply-templates select="key('descriptionsByNodeID', current())/rdfs:comment"/>
     </label>
-    <div class="input">
-      <xsl:call-template name="selectPluginParameterHandler"/>
-    </div>
-    <div class="unit">
-      <xsl:text>&#8203;</xsl:text>
-      <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2units:unit"/>
-    </div>
-  </div>  
+    <xsl:call-template name="selectPluginParameterHandler"/>
+    <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2units:unit"/>
+  </fieldset>  
 </xsl:template>
 
 <xsl:template name="handlePluginControlOutput">
-  <div><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></div>
+  <span><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></span>
 </xsl:template>
 
 <xsl:template name="handlePluginAudioInput">
-  <div><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></div>
+  <span><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></span>
 </xsl:template>
 
 <xsl:template name="handlePluginAudioOutput">
-  <div><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></div>
+  <span><xsl:value-of select="key('descriptionsByNodeID', current())/lv2:name"/></span>
 </xsl:template>
 
 </xsl:stylesheet>
