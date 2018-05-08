@@ -9,29 +9,41 @@ MODHOSTHOST=localhost
 MODHOSTPORT=5555
 WEBGUIROOT=/var/www/html
 WEBGUIURI=lv2rdf.html
-JQUERYURI=https://code.jquery.com/jquery-3.3.1.js
+JQUERYURI=https://code.jquery.com/jquery-3.3.1.min.js
 JQUERYINTEGRITY=sha384-fJU6sGmyn07b+uD1nMk7/iSb4yvaowcueiQhfVgQuD98rfva8mcr1eSvjchfpMrH
 JQUERYUIURI=https://code.jquery.com/ui/1.12.1/jquery-ui.min.js
 JQUERYUIINTEGRITY=sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=
 JQUERYUICSSURI=http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css
+JQUERYUICSSINTEGRITY=
+DOWNLOADJQUERY=true
 JSURI=lv2rdf.js
 CSSURI=lv2rdf.css
 AJAXROOT=/var/www/html
 AJAXURI=lv2rdf.php
-XSLDIR=.
+XSLDIR=./xslt
 
 . lv2rdf.conf
 
+SRISUFFIX=.sha
+SRIHASH=sha384
+
 function success {
+
   echo  -e " \033[1;32msucceeded.\033[0m"
+
 }
+
 
 function failure {
+
   echo  -e " \033[1;31mfailed with return code $?.\033[0m"
   exit 1
+
 }
 
+
 function usage {
+
   echo Usage: $0 [build\|download\|install\|clean]
   echo
   echo \*build\* takes a mod-host command history file from \'$MODHOSTCONF\' 
@@ -42,8 +54,6 @@ function usage {
   echo XSL files are expected in \'$XSLDIR\', generated files will be  
   echo written out to \'$BUILDDIR\'. 
   echo
-  echo \*download\* will make a local copy of the desired JQuery and JQueryUI versions.
-  echo 
   echo \*install\* will deploy the built interface files to the configured locations.
   echo
   echo \*clean\* will wipe intermediary files from \'$BUILDDIR\'.
@@ -51,7 +61,32 @@ function usage {
   echo Source and target paths as well as JQuery versions can be configured in \'lv2rdf.conf\'.
   echo
   exit 255
+
 }
+
+
+function download {
+
+  WGET="wget -q -P ${BUILDDIR:-.} --backups=1"
+  echo -en "Downloading JQuery from $JQUERYURI..."
+  $WGET "$JQUERYURI" && success || failure
+  echo -en "Downloading JQuery-UI from $JQUERYUIURI..."
+  $WGET "$JQUERYUIURI" && success || failure
+  echo -en "Downloading JQuery-UI CSS from $JQUERYUICSSURI..."
+  $WGET "$JQUERYUICSSURI" && success || failure
+  for i in $JQUERYURI $JQUERYUIURI $JQUERYUICSSURI; do
+    echo -en "Computing SRI checksum for $i..."
+    n=`basename "$i"`
+    {
+      cat "$BUILDDIR"/"$n" \
+      | openssl dgst -"$SRIHASH" -binary \
+      | openssl enc -base64 -A \
+      > "$BUILDDIR"/"$n""$SRISUFFIX"
+    } && success || failure
+  done
+
+}
+
 
 function build {
   
@@ -84,6 +119,26 @@ function build {
   echo -e "...closing output file $RDF."
   echo "</plugins>" >> "$RDF"
 
+  if [[ "$DOWNLOADJQUERY" = "true" ]] ; then
+    echo "Using a local copy of jQuery."
+    download
+    for i in JQUERYURI JQUERYUIURI JQUERYUICSSURI; do
+      k=`basename "${!i}"`
+      echo -en "Shortening $i to $k to use local copy..."
+      declare $i=$k
+      test "${!i}" = "$k" && success || failure
+    done
+    echo -en "Substituting local SRI hash for $JQUERYURI: "
+    JQUERYINTEGRITY="$SRIHASH"-`cat "$BUILDDIR"/"$JQUERYURI""$SRISUFFIX"`
+    echo "'$JQUERYINTEGRITY'."
+    echo -en "Substituting local SRI hash for $JQUERYUIURI: "
+    JQUERYUIINTEGRITY="$SRIHASH"-`cat "$BUILDDIR"/"$JQUERYUIURI""$SRISUFFIX"`
+    echo "'$JQUERYUIINTEGRITY'."
+    echo -en "Substituting local SRI hash for $JQUERYUICSSURI: "
+    JQUERYUICSSINTEGRITY="$SRIHASH"-`cat "$BUILDDIR"/"$JQUERYUIURI""$SRISUFFIX"`
+    echo "'$JQUERYUICSSINTEGRITY'."
+  fi
+  
   echo -ne "Generating XHTML $WEBGUIURI..."
   xsltproc \
     --stringparam jsuri "$JSURI" \
@@ -93,6 +148,7 @@ function build {
     --stringparam jqueryuiuri "$JQUERYUIURI" \
     --stringparam jqueryuiintegrity "$JQUERYUIINTEGRITY" \
     --stringparam jqueryuicssuri "$JQUERYUICSSURI" \
+    --stringparam jqueryuicssintegrity "$JQUERYUICSSINTEGRITY" \
     "$XSLDIR"/lv2rdf2html.xsl "$RDF" \
   | xsltproc "$XSLDIR"/xml-prettyprint.xsl - > "$BUILDDIR"/"$WEBGUIURI" && success || failure
 
@@ -106,19 +162,8 @@ function build {
   xsltproc \
     --stringparam ajaxuri "$AJAXURI" \
     "$XSLDIR"/lv2rdf2js.xsl "$RDF" > "$BUILDDIR"/"$JSURI" && success || failure
-
 }
 
-
-function download {
-  WGET="wget -nv -P ${BUILDDIR:-.} --backups=1"
-  echo -e "Downloading JQuery from $JQUERYURI..."
-  $WGET "$JQUERYURI" && success || failure
-  echo -e "Downloading JQuery-UI from $JQUERYUIURI..."
-  $WGET "$JQUERYUIURI" && success || failure
-  echo -e "Downloading JQuery-UI CSS from $JQUERYUICSSURI..."
-  $WGET "$JQUERYUICSSURI" && success || failure
-}
 
 function install {
 
@@ -134,7 +179,15 @@ function install {
   echo -en "Installing PHP AJAX handler $AJAXURI to $AJAXROOT..."
   cp "$BUILDDIR"/"$AJAXURI" "$AJAXROOT" && success || failure
 
+  for i in "$JQUERYURI" "$JQUERYUIURI" "$JQUERYUICSSURI"; do
+    n="$BUILDDIR"/`basename $i`
+    if [[ -e "$n" ]]; then
+      echo -en "Installing $n to $WEBGUIROOT..."
+      cp "$n" "$WEBGUIROOT" && success || failure
+    fi
+  done
 }
+
 
 function cleanup {          
   
@@ -144,8 +197,13 @@ function cleanup {
   rm -f "$BUILDDIR"/*rdf && success || failure
   echo -en "Deleting web interface files..."
   rm -f "$BUILDDIR"/"$WEBGUIURI" "$BUILDDIR"/"$JSURI" "$BUILDDIR"/"$CSSURI" "$BUILDDIR"/"$AJAXURI" && success || failure
-  
+  echo -en "Deleting local jQuery copies and checksums..."
+  for i in "$JQUERYURI" "$JQUERYUIURI" "$JQUERYUICSSURI"; do
+    k=`basename $i`
+    rm -f "$BUILDDIR"/"$k"* && echo -n " $k"
+  done ; success 
 }
+
 
 function parse_cmdline {
   if [[ -z "$1" ]] ; then
@@ -156,9 +214,6 @@ function parse_cmdline {
     case "$1" in
         build)
             build
-            ;;
-        download)
-            download
             ;;
         install)
             install

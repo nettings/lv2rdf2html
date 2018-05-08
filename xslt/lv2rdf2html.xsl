@@ -49,14 +49,17 @@
     <script
       src="{$jqueryuri}"
       integrity="{$jqueryintegrity}"
-      crossorigin="anonymous">&#8203;
-    </script>
+      crossorigin="anonymous">&#8203;</script>
     <script
       src="{$jqueryuiuri}"
       integrity="{$jqueryuiintegrity}"
-      crossorigin="anonymous">&#8203;
-    </script>
-    <link rel="stylesheet" href="{$jqueryuicssuri}" />
+      crossorigin="anonymous">&#8203;</script>
+    <link 
+      rel="stylesheet" 
+      href="{$jqueryuicssuri}" 
+      integrity="{$jqueryuicssintegrity}"
+      crossorigin="anonymous"
+    />
     <script src="{$jsuri}">&#8203;</script>
     <link rel="stylesheet" href="{$cssuri}" />
   </head>
