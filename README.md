@@ -15,21 +15,32 @@ LV2 metadata must be converted to XML first.
 !Adriaensen)](fil4stereo.png)
 ## Usage
 
-### Automatic processing with generate.sh
+### Automatic processing
 The [make.sh](make.sh) script operates on a mod-host command history, and
 automatically generates and deploys all required components. To use it, please edit the settings in
 [lv2rdf.conf](lv2rdf.conf).
 
-The generator script will then
-* Collect the desired plugin documentation in temporary Turtle files using lv2info
-* Convert the turtle files to a temporary RDF/XML file using [rapper](http://librdf.org/raptor/rapper.html)
-(part of raptor/Redland, this is what I use for testing). 
-* Tag all generated identifiers in the RDF/XML with their plugin ID no. to
-make them globally unique
-* Generate and prettyprint an XHTML user interface file
-* Generate corresponding Javascript and CSS files
-* Generate the server-side PHP AJAX handler
-* optionally deploy them to the web server root
+* Collect the desired plugin documentation in temporary Turtle files using
+  lv2info,
+* convert the turtle files to a temporary RDF/XML file using [rapper](http://librdf.org/raptor/rapper.html)
+(part of raptor/Redland, this is what I use for testing),
+* tag all generated identifiers in the RDF/XML with their plugin ID no. to
+make them globally unique,
+* generate and prettyprint an XHTML user interface,
+* generate corresponding Javascript code and CSS,
+* generate the server-side PHP AJAX handler:
+```
+./make.sh build
+```
+* To optionally deploy them to the web server root:
+```
+sudo ./make.sh install
+```
+* To clean up intermediary build files:
+```
+./make.sh clean
+```
+
 
 ## Requirements
 
