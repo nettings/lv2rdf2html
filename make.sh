@@ -1,12 +1,19 @@
 #!/bin/bash
 # generate a web interface from a mod-host command history file
 
+# This is the syntax and default setup for lv2rdf.conf
+
 BUILDDIR=./build
 MODHOSTCONF=./mod-host.cmd
 MODHOSTHOST=localhost
 MODHOSTPORT=5555
 WEBGUIROOT=/var/www/html
 WEBGUIURI=lv2rdf.html
+JQUERYURI=https://code.jquery.com/jquery-3.3.1.js
+JQUERYINTEGRITY=sha384-fJU6sGmyn07b+uD1nMk7/iSb4yvaowcueiQhfVgQuD98rfva8mcr1eSvjchfpMrH
+JQUERYUIURI=https://code.jquery.com/ui/1.12.1/jquery-ui.min.js
+JQUERYUIINTEGRITY=sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=
+JQUERYUICSSURI=http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css
 JSURI=lv2rdf.js
 CSSURI=lv2rdf.css
 AJAXROOT=/var/www/html
@@ -34,6 +41,8 @@ function usage {
   echo
   echo XSL files are expected in \'$XSLDIR\', generated files will be  
   echo written out to \'$BUILDDIR\'. 
+  echo
+  echo \*download\* will download the desired JQuery and JQueryUI versions.
   echo 
   echo \*install\* will deploy the built interface files to the configured locations.
   echo
@@ -101,6 +110,16 @@ function build {
 }
 
 
+function download {
+  WGET="wget -nv -P ${BUILDDIR:-.} --backups=1"
+  echo -e "Downloading JQuery from $JQUERYURI..."
+  $WGET "$JQUERYURI" && success || failure
+  echo -e "Downloading JQuery-UI from $JQUERYUIURI..."
+  $WGET "$JQUERYUIURI" && success || failure
+  echo -e "Downloading JQuery-UI CSS from $JQUERYUICSSURI..."
+  $WGET "$JQUERYUICSSURI" && success || failure
+}
+
 function install {
 
   echo -en "Installing XHTML $WEBGUIURI to $WEBGUIROOT..."
@@ -137,6 +156,9 @@ function parse_cmdline {
     case "$1" in
         build)
             build
+            ;;
+        download)
+            download
             ;;
         install)
             install
