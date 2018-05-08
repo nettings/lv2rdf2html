@@ -79,6 +79,11 @@ function build {
   xsltproc \
     --stringparam jsuri "$JSURI" \
     --stringparam cssuri "$CSSURI" \
+    --stringparam jqueryuri "$JQUERYURI" \
+    --stringparam jqueryintegrity "$JQUERYINTEGRITY" \
+    --stringparam jqueryuiuri "$JQUERYUIURI" \
+    --stringparam jqueryuiintegrity "$JQUERYUIINTEGRITY" \
+    --stringparam jqueryuicssuri "$JQUERYUICSSURI" \
     "$XSLDIR"/lv2rdf2html.xsl "$RDF" \
   | xsltproc "$XSLDIR"/xml-prettyprint.xsl - > "$BUILDDIR"/"$WEBGUIURI" && success || failure
 

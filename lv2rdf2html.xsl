@@ -35,22 +35,26 @@
 
 <xsl:param name="jsuri"/>
 <xsl:param name="cssuri"/>
+<xsl:param name="jqueryuri"/>
+<xsl:param name="jqueryintegrity"/>
+<xsl:param name="jqueryuiuri"/>
+<xsl:param name="jqueryuiintegrity"/>
 
 <xsl:template match="/*">
 <html> 
   <head>
     <meta charset="utf-8"/>
     <script
-      src="https://code.jquery.com/jquery-3.3.1.js"
-      integrity="sha384-fJU6sGmyn07b+uD1nMk7/iSb4yvaowcueiQhfVgQuD98rfva8mcr1eSvjchfpMrH"
+      src="{$jqueryuri}"
+      integrity="{$jqueryintegrity}"
       crossorigin="anonymous">&#8203;
     </script>
     <script
-      src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-      integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+      src="{$jqueryuiuri}"
+      integrity="{$jqueryuiintegrity}"
       crossorigin="anonymous">&#8203;
     </script>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" href="{$jqueryuicssuri}" />
     <script src="{$jsuri}">&#8203;</script>
     <link rel="stylesheet" href="{$cssuri}" />
   </head>
