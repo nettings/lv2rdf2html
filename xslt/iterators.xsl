@@ -102,7 +102,8 @@
       ]/@rdf:nodeID
     ">
       <xsl:sort select="lv2:index"/>
-      <xsl:call-template name="handlePluginAudioOutput"/>  
+      <xsl:call-template name="handlePluginAudioOutput">
+        <xsl:with-param name="pluginID"/>  
     </xsl:for-each>
   </xsl:for-each>
 </xsl:template>
