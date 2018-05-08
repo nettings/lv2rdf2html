@@ -155,7 +155,6 @@ $( document ).ready(function() {
   $( "#ajaxDebug" ).accordion({
     header: "section h1",
     collapsible: true,
-    collapsed: true,
     active: false
   });
   init();

@@ -1,98 +1,54 @@
-div {
-  border: 1px grey dotted;
-}
-div#ajaxDebug {
-  position: fixed;
-  width: 30em;
-  max-width: 50%;
-  right: 1em;
-  top: 1em;
-  height: 15em;
-  padding: 0.5ex;
-  font-weight: bold;
-  background-color: #cccccc;
-  border: 4px outset #888880;
-}
-div#ajaxDebug a.X {
-  position: absolute;
-  color: #000000;
-  text-decoration: none;
-  font-weight: normal;
-  right: 5px;
-  top: 0;
-  padding: 0ex 0.5ex 0.3ex 0.5ex;
-  border: solid #444444 1px;
-}
 div#ajaxLog div {
-  position: relative;
-  overflow: auto;
-  font-weight: normal;
-  background-color: #ddddd2;
-  border: 2px solid black;
-
 }
 div#ajaxTX { height: 3em; }
 div#ajaxRX { height: 10em; }
 
-div.pluginGUI {
-  display: table;
-  width: 35.5em;
-  max-width: 35.5em;
-  border: 2px solid black;
+html {
+  height: 100%;
 }
-div.pluginGUI h1 {
-  display: table-row;
-  font-size: 120%;
+section {
+  min-width: 40em;
+  max-width: 60em;
+  max-height: 80%;
 }
-div.pluginGUI p {
+form, div.info, div.ports { 
+  width: 100%;
+}
+div.info, div.ports {
+  border: 1px solid grey;
+  border-radius: 1ex;
+}
+div.info p, div.ports p {
+  padding: 0 0 0 1em;
+}
+fieldset {
+  padding: 0;
   margin: 0;
-}
-
-div.ports { display: table }
-div.ports div { display: table-row }
-div.ports div div { 
-  display: table-cell; 
-  padding: 0 1ex 0 0;
-}
-
-form { 
-  display: row-group; 
-  border-collapse: separate;
-  border-spacing: 1ex;
-  border: 1px solid;
-}
-div.formItem { 
-  display: table-row;
+  min-height: 2em;
+  border: 1px solid grey;
+  border-radius: 1ex;
 }
 label { 
-  display: table-cell; 
-  width: 12em;
-}
-div.input {
-  display: table-cell;
+  display: inline-block;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 1em;
+  width: 10em; 
 }
 div.slider {
   display: inline-block;
-  width: 11em;
+  position: relative;
+  top: 0.5ex;
+  width: 15em;
+  margin: 0 1ex 0 1ex;
 }
-input.value, div.range {
+input.value {
   display: inline-block;
-  width: 6em;
-  max-width: 6em;
+  font-size: 80%;
+  width: 5em;
   text-align: right;
-}
-div.range {
-  font-size: 60%;
-  font-weight: bold;
+  margin-left: 1ex;
 }
 div.unit {
-  display: table-cell;
-  width: 4em;
-}
-div.comment {
-  display: table-cell;
-  font-style: italic;
-  width: auto;
+  display: inline-block;
+    width: 4em;
 }
