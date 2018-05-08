@@ -107,7 +107,6 @@
     </label>
     <xsl:call-template name="selectPluginParameterHandler"/>
     <xsl:apply-templates select="key('descriptionsByNodeID', current())/lv2units:unit"/>
-    <xsl:call-template name="range"/>
   </fieldset>  
 </xsl:template>
 
