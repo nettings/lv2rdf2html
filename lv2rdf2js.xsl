@@ -149,7 +149,14 @@ $( document ).ready(function() {
   $( document ).tooltip();
   $( "#pluginList" ).accordion({
     header: "section.pluginGUI h1",
-    collapsible: true
+    collapsible: true,
+    active: false
+  });
+  $( "#ajaxDebug" ).accordion({
+    header: "section h1",
+    collapsible: true,
+    collapsed: true,
+    active: false
   });
   init();
 

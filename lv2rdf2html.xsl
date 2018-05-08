@@ -59,15 +59,17 @@
       <xsl:call-template name="iterateOverPlugins"/> 
     </main>
     <footer id="ajaxDebug">
-      AJAX Debugging: <a class="X" href="#" onclick="javascript:$('#ajaxDebug').css('display','none')">x</a>
-      <div id="ajaxLog">
-        <div id="ajaxTX">
-          Transmitted: <span>&#8203;</span>
+      <section>
+        <h1>AJAX Debugging</h1>
+        <div id="ajaxLog">
+          <div id="ajaxTX">
+            Transmitted: <span>&#8203;</span>
+          </div>
+          <div id="ajaxRX">
+            Received: <span>&#8203;</span>
+          </div>
         </div>
-        <div id="ajaxRX">
-          Received: <span>&#8203;</span>
-        </div>
-      </div>
+      </section>
     </footer>
   </body>
 </html>
