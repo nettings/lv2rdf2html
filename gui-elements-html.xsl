@@ -76,10 +76,7 @@
 
 
 <xsl:template name="pluginParameterSlider">
-  <div class="slider" id="{current()}_">
-    <xsl:call-template name="tooltip"/>
-    &#8203;
-  </div>
+  <div class="slider" id="{current()}_"><xsl:call-template name="tooltip"/>&#8203;</div>
   <input 
     id="{current()}" 
     class="value" 
