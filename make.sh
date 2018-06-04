@@ -21,7 +21,7 @@ CSSURI=lv2rdf.css
 AJAXROOT=/var/www/html
 AJAXURI=lv2rdf.php
 XSLDIR=./xslt
-DESTDIR=
+# DESTDIR=
 
 . lv2rdf.conf
 
