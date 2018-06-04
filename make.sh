@@ -168,22 +168,22 @@ function build {
 
 function install {
 
-  echo -en "Installing XHTML $WEBGUIURI to $WEBGUIROOT..."
+  echo -en "Installing XHTML $WEBGUIURI to $DESTDIR$WEBGUIROOT..."
   cp "$BUILDDIR"/"$WEBGUIURI" "$DESTDIR""$WEBGUIROOT" && success || failure
 
-  echo -en "Installing JavaScript $JSURI to $WEBGUIROOT..."
+  echo -en "Installing JavaScript $JSURI to $DESTDIR$WEBGUIROOT..."
   cp "$BUILDDIR"/"$JSURI" "$DESTDIR""$WEBGUIROOT" && success || failure
  
-  echo -en "Installing CSS $CSSURI to $WEBGUIROOT..."
+  echo -en "Installing CSS $CSSURI to $DESTDIR$WEBGUIROOT..."
   cp "$CSSURI" "$DESTDIR""$WEBGUIROOT" && success || failure
 
-  echo -en "Installing PHP AJAX handler $AJAXURI to $AJAXROOT..."
+  echo -en "Installing PHP AJAX handler $AJAXURI to $DESTDIR$AJAXROOT..."
   cp "$BUILDDIR"/"$AJAXURI" "$DESTDIR""$AJAXROOT" && success || failure
 
   for i in "$JQUERYURI" "$JQUERYUIURI" "$JQUERYUICSSURI"; do
     n="$BUILDDIR"/`basename $i`
     if [[ -e "$n" ]]; then
-      echo -en "Installing $n to $WEBGUIROOT..."
+      echo -en "Installing $n to $DESTDIR$WEBGUIROOT..."
       cp "$n" "$DESTDIR""$WEBGUIROOT" && success || failure
     fi
   done
