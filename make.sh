@@ -21,6 +21,7 @@ CSSURI=lv2rdf.css
 AJAXROOT=/var/www/html
 AJAXURI=lv2rdf.php
 XSLDIR=./xslt
+DESTDIR=
 
 . lv2rdf.conf
 
@@ -168,22 +169,22 @@ function build {
 function install {
 
   echo -en "Installing XHTML $WEBGUIURI to $WEBGUIROOT..."
-  cp "$BUILDDIR"/"$WEBGUIURI" "$WEBGUIROOT" && success || failure
+  cp "$BUILDDIR"/"$WEBGUIURI" "$DESTDIR""$WEBGUIROOT" && success || failure
 
   echo -en "Installing JavaScript $JSURI to $WEBGUIROOT..."
-  cp "$BUILDDIR"/"$JSURI" "$WEBGUIROOT" && success || failure
+  cp "$BUILDDIR"/"$JSURI" "$DESTDIR""$WEBGUIROOT" && success || failure
  
   echo -en "Installing CSS $CSSURI to $WEBGUIROOT..."
-  cp "$CSSURI" "$WEBGUIROOT" && success || failure
+  cp "$CSSURI" "$DESTDIR""$WEBGUIROOT" && success || failure
 
   echo -en "Installing PHP AJAX handler $AJAXURI to $AJAXROOT..."
-  cp "$BUILDDIR"/"$AJAXURI" "$AJAXROOT" && success || failure
+  cp "$BUILDDIR"/"$AJAXURI" "$DESTDIR""$AJAXROOT" && success || failure
 
   for i in "$JQUERYURI" "$JQUERYUIURI" "$JQUERYUICSSURI"; do
     n="$BUILDDIR"/`basename $i`
     if [[ -e "$n" ]]; then
       echo -en "Installing $n to $WEBGUIROOT..."
-      cp "$n" "$WEBGUIROOT" && success || failure
+      cp "$n" "$DESTDIR""$WEBGUIROOT" && success || failure
     fi
   done
 }
