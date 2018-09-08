@@ -56,6 +56,7 @@ $instance = 0;
   <xsl:call-template name="iterateOverPlugins"/>
 
 if (isset($_POST['nodeID'])) {
+   // We are updating a single parameter.
    // Be sure to sanitize user-generated input. We assume using it as an array index is safe.
    // Strings used verbatim must be sanitized.
    $req = "param_set " 
@@ -81,9 +82,10 @@ if (isset($_POST['nodeID'])) {
      header('Unknown mod-host command error: ' . $res, true, 503);
      echo 'Unknown mod-host command error: ' . $res;
    }
-   exit;
+   exit; // Terminate processing, we're done.
 }
 
+// We are interested in all current parameters. Get them:
 
 foreach ($nodeIDs as $nodeID => $data) {
   $req = "param_get " . $data['instanceNo'] . " " . $data['symbol'];
@@ -97,12 +99,12 @@ foreach ($nodeIDs as $nodeID => $data) {
   $nodeIDs[$nodeID]['value'] = $res[$last];
 } 
 
-
-
 if (isset($_GET['getPluginData'])) {
+  // Front-end wants to know all values.
   header('Content-Type: application/json');
   echo json_encode($nodeIDs);
 } else if (isset($_GET['DEBUG'])) {
+  // Developer wants a human-readable dump:
 </xsl:processing-instruction>
 <html>
   <head>
