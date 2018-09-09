@@ -36,6 +36,12 @@
     <xsl:when test="@rdf:resource='http://lv2plug.in/ns/extensions/units#bpm'">
       <abbr title="beats per minute">BPM</abbr>
     </xsl:when>
+    <xsl:when test="@rdf:nodeID">
+      <!-- found in zam-plugins -->
+      <abbr title="{key('descriptionsByNodeId', @rdf:nodeID)/rdfs:label}">
+        <xsl:value-of select="key('descriptionsByNodeId', @rdf:nodeID)/lv2units:symbol"/>
+      </abbr>
+    </xsl:when>
     <xsl:otherwise>
       <xsl:comment>lv2rdf2html: unrecognized unit <xsl:copy-of select="."/>. Falling back to generic display.</xsl:comment>
       <xsl:value-of select="
@@ -48,6 +54,7 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+
 
 <!-- matches plugin comments -->
 <xsl:template match="rdf:Description[@rdf:about]/rdfs:comment">
