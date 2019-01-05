@@ -38,8 +38,8 @@
     </xsl:when>
     <xsl:when test="@rdf:nodeID">
       <!-- found in zam-plugins -->
-      <abbr title="{key('descriptionsByNodeId', @rdf:nodeID)/rdfs:label}">
-        <xsl:value-of select="key('descriptionsByNodeId', @rdf:nodeID)/lv2units:symbol"/>
+      <abbr title="{key('descriptionsByNodeID', current()/@rdf:nodeID)/rdfs:label}">
+        <xsl:value-of select="key('descriptionsByNodeID', @rdf:nodeID)/lv2units:symbol"/>
       </abbr>
     </xsl:when>
     <xsl:otherwise>
