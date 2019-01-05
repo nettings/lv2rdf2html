@@ -156,8 +156,8 @@ $( document ).ready(function() {
   $( "#ajaxDebug" ).accordion({
     header: "h1",
     collapsible: true,
-    event: "dblclick",
-    active: 0
+    heightStyle: "content",
+    active: false
   }).draggable({
     appendTo: "body",
     containment: "window",
