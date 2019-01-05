@@ -7,6 +7,7 @@ BUILDDIR=./build
 MODHOSTCONF=./mod-host.cmd
 MODHOSTHOST=localhost
 MODHOSTPORT=5555
+SAMPLERATE=48000
 WEBGUIROOT=/var/www/html
 WEBGUIURI=lv2rdf.html
 JQUERYURI=https://code.jquery.com/jquery-3.3.1.min.js
@@ -221,6 +222,9 @@ function parse_cmdline {
             ;;
         clean)
             cleanup
+            ;;
+        download)
+            download
             ;;
         *)
             usage
