@@ -136,9 +136,11 @@
 
 <xsl:template name="rangeTooltip">
   <xsl:attribute name="title">
+    <xsl:text>[</xsl:text>
     <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
-    <xsl:text> &#8804; x &#8804; </xsl:text>
+    <xsl:text> ; </xsl:text>
     <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
+    <xsl:text>]</xsl:text> 
   </xsl:attribute>
 </xsl:template>
 
