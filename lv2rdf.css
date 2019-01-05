@@ -1,8 +1,8 @@
 #ajaxDebug {
   width: 100%;
 }
-div#ajaxTX { height: 2em; }
-div#ajaxRX { height: 5em; }
+div#ajaxTX { height: auto; }
+div#ajaxRX { height: auto; }
 
 html {
   height: 100%;
