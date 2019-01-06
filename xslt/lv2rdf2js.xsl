@@ -145,7 +145,7 @@ $( document ).ready(function() {
 
 </xsl:text>
 <xsl:call-template name="iterateOverPlugins"/>
-<xsl:text>
+<xsl:text disable-output-escaping="yes">
 
   $( document ).tooltip();
   $( "#pluginList" ).accordion({
@@ -161,10 +161,11 @@ $( document ).ready(function() {
   }).draggable({
     appendTo: "body",
     containment: "window",
+    scroll: false,
     stop: function(event, ui) {
-        var top = ui.helper.offset(top) - $(window).scrollTop();
-        ui.helper.css('position', 'fixed');
-        ui.helper.css('top', top+"px");
+      var top = ui.helper.offset(top) - $(window).scrollTop();
+      ui.helper.css('position', 'fixed');
+      ui.helper.css('top', top+"px");
     }
   });
   init();
