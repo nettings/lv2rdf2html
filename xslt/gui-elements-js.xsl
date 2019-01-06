@@ -70,24 +70,33 @@
 
 
 <xsl:template name="pluginParameterSlider">
+  <!-- coefficient for lv2:sampleRate port property -->
+  <xsl:param name="k">1.0</xsl:param>
+  $( "#<xsl:value-of select="current()"/>" ).data('default', <xsl:value-of 
+      select="key('descriptionsByNodeID', current())/lv2:default * $k"/>);
   <xsl:choose>
     <!-- logarithmic slider -->
     <xsl:when test="
       key('descriptionsByNodeID', current())/lv2:portProperty/@rdf:resource 
       = 'http://lv2plug.in/ns/ext/port-props#logarithmic'
     ">
-      <xsl:call-template name="pluginParameterSliderLog"/>
+      <xsl:call-template name="pluginParameterSliderLog">
+        <xsl:with-param name="k" select="$k"/>
+      </xsl:call-template>
     </xsl:when>
     <!-- non-logarithmic slider -->
     <xsl:otherwise>
-      <xsl:call-template name="pluginParameterSliderLin"/>
+      <xsl:call-template name="pluginParameterSliderLin">
+        <xsl:with-param name="k" select="$k"/>
+      </xsl:call-template>
     </xsl:otherwise>    
   </xsl:choose>
 </xsl:template>
 
 
 <xsl:template name="pluginParameterSliderLog">
-  $( "#<xsl:value-of select="current()"/>" ).data('default', <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>);
+  <!-- coefficient for lv2:sampleRate port property -->
+  <xsl:param name="k">1.0</xsl:param>
   $( "#<xsl:value-of select="current()"/>_" ).slider({
     value: $( "#<xsl:value-of select="current()"/>_" ).data('default'),
     min: 0,
@@ -95,8 +104,8 @@
     step: 1,
     slide: function(event, ui) {
       var value = lin2log(ui.value, <xsl:value-of
-        select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of 
-        select="key('descriptionsByNodeID', current())/lv2:maximum"/>);
+        select="key('descriptionsByNodeID', current())/lv2:minimum * $k"/>, <xsl:value-of 
+        select="key('descriptionsByNodeID', current())/lv2:maximum * $k"/>);
       $("#<xsl:value-of
         select="current()"/>").val(value.toFixed(NUMBOX_DECIMALS));
       <xsl:call-template name="setPluginDataFunc"/>               
@@ -106,23 +115,23 @@
     var value = this.value;
     $("#<xsl:value-of
       select="current()"/>_").slider("value", log2lin(value, <xsl:value-of 
-      select="key('descriptionsByNodeID', current())/lv2:minimum"/>, <xsl:value-of
-      select="key('descriptionsByNodeID', current())/lv2:maximum"/>));
+      select="key('descriptionsByNodeID', current())/lv2:minimum * $k"/>, <xsl:value-of
+      select="key('descriptionsByNodeID', current())/lv2:maximum * $k"/>));
     <xsl:call-template name="setPluginDataFunc"/>
   });
 </xsl:template>
 
 
 <xsl:template name="pluginParameterSliderLin">
-  $( "#<xsl:value-of select="current()"/>" ).data('default', <xsl:value-of 
-      select="key('descriptionsByNodeID', current())/lv2:default"/>);
+  <!-- coefficient for lv2:sampleRate port property -->
+  <xsl:param name="k">1.0</xsl:param>
   $( "#<xsl:value-of select="current()"/>_" ).slider({
     value: $( "#<xsl:value-of select="current()"/>_" ).data('default'),
-    min:   <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>,
-    max:   <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>,
+    min:   <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum * $k"/>,
+    max:   <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum * $k"/>,
     step:  (<xsl:value-of 
-      select="key('descriptionsByNodeID', current())/lv2:maximum"/> - <xsl:value-of 
-      select="key('descriptionsByNodeID', current())/lv2:minimum"/>) / SLIDER_RESOLUTION,
+      select="key('descriptionsByNodeID', current())/lv2:maximum * $k"/> - <xsl:value-of 
+      select="key('descriptionsByNodeID', current())/lv2:minimum * $k"/>) / SLIDER_RESOLUTION,
     slide: function(event, ui) {
       var value = ui.value;
       $("#<xsl:value-of select="current()"/>").val(value.toFixed(NUMBOX_DECIMALS));

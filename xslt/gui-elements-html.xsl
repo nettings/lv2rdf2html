@@ -76,17 +76,25 @@
 
 
 <xsl:template name="pluginParameterSlider">
+  <!-- coefficient for lv2:sampleRate port property -->
+  <xsl:param name="k">1.0</xsl:param>
   <div class="slider" id="{current()}_"><xsl:call-template name="tooltip"/>&#8203;</div>
   <input 
     id="{current()}" 
     class="value" 
     name="{key('descriptionsByNodeID', current())/lv2:symbol}"
     type="text"
-    value="{key('descriptionsByNodeID', current())/lv2:default}"
-    min="{key('descriptionsByNodeID', current())/lv2:minimum}"
-    max="{key('descriptionsByNodeID', current())/lv2:maximum}"
+    value="{key('descriptionsByNodeID', current())/lv2:default * $k}"
+    min="{key('descriptionsByNodeID', current())/lv2:minimum * $k}"
+    max="{key('descriptionsByNodeID', current())/lv2:maximum * $k}"
   >
-    <xsl:call-template name="rangeTooltip"/>
+    <xsl:attribute name="title">
+      <xsl:text>[</xsl:text>
+      <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum * $k"/>
+      <xsl:text> ; </xsl:text>
+      <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum * $k"/>
+      <xsl:text>]</xsl:text> 
+    </xsl:attribute>
   </input>
   <xsl:choose>
     <!-- logarithmic slider -->
@@ -134,14 +142,5 @@
   </xsl:if>
 </xsl:template>
 
-<xsl:template name="rangeTooltip">
-  <xsl:attribute name="title">
-    <xsl:text>[</xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum"/>
-    <xsl:text> ; </xsl:text>
-    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum"/>
-    <xsl:text>]</xsl:text> 
-  </xsl:attribute>
-</xsl:template>
 
 </xsl:stylesheet>

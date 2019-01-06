@@ -87,7 +87,11 @@
 
 <xsl:template name="handlePlugin">
   <section class="pluginGUI" id="plugin{.}">
-    <h1><xsl:value-of select="key('descriptionsByPluginID', current())/doap:name"/></h1>
+    <h1>
+      <xsl:value-of select="key('descriptionsByPluginID', current())/doap:name"/>
+      <input id="plugin{.}" name="enable" type="checkbox" value="1" checked="checked"/>
+      <input id="plugin{.}_" name="bypass" type="hidden" value="0"/>
+    </h1>
     <div>
       <div class="info">
         <xsl:call-template name="license"/>

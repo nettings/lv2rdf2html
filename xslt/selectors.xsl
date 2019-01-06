@@ -21,6 +21,17 @@
 
 
 <xsl:template name="selectPluginParameterHandler">
+  <!-- implement lv2:sampleRate -->
+  <xsl:variable name="fs">
+    <xsl:choose>
+      <xsl:when  test="
+        key('descriptionsByNodeID', current())[
+          lv2:portProperty/@rdf:resource = 'http://lv2plug.in/ns/lv2core#sampleRate'
+        ]
+      ">48000</xsl:when>
+      <xsl:otherwise>1.0</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
   <xsl:choose>
     <!-- handle enumeration of options: dropdown -->
     <xsl:when test="
@@ -41,7 +52,9 @@
       key('descriptionsByNodeID', current())/lv2:default/@rdf:datatype 
       = 'http://www.w3.org/2001/XMLSchema#decimal'
     ">
-      <xsl:call-template name="pluginParameterSlider"/>
+      <xsl:call-template name="pluginParameterSlider">
+        <xsl:with-param name="k" select="$fs"/>
+      </xsl:call-template>
     </xsl:when>
     <!-- handle integer range > 2: jQuery-ui slider -->          
     <xsl:when test="
