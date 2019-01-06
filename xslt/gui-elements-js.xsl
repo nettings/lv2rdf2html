@@ -98,7 +98,9 @@
   <!-- coefficient for lv2:sampleRate port property -->
   <xsl:param name="k">1.0</xsl:param>
   $( "#<xsl:value-of select="current()"/>_" ).slider({
-    value: $( "#<xsl:value-of select="current()"/>_" ).data('default'),
+    value: log2lin($( "#<xsl:value-of select="current()"/>" ).data('default'), <xsl:value-of
+        select="key('descriptionsByNodeID', current())/lv2:minimum * $k"/>, <xsl:value-of 
+        select="key('descriptionsByNodeID', current())/lv2:maximum * $k"/>),
     min: 0,
     max: SLIDER_RESOLUTION,
     step: 1,
@@ -126,7 +128,7 @@
   <!-- coefficient for lv2:sampleRate port property -->
   <xsl:param name="k">1.0</xsl:param>
   $( "#<xsl:value-of select="current()"/>_" ).slider({
-    value: $( "#<xsl:value-of select="current()"/>_" ).data('default'),
+    value: $( "#<xsl:value-of select="current()"/>" ).data('default'),
     min:   <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:minimum * $k"/>,
     max:   <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:maximum * $k"/>,
     step:  (<xsl:value-of 
