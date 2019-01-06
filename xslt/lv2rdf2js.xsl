@@ -150,13 +150,14 @@ $( document ).ready(function() {
   $( document ).tooltip();
   $( "#pluginList" ).accordion({
     header: "section.pluginGUI h1",
+    heightStyle: "content",
     collapsible: true,
     active: false
   });
   $( "#ajaxDebug" ).accordion({
     header: "h1",
-    collapsible: true,
     heightStyle: "content",
+    collapsible: true,
     active: false
   }).draggable({
     appendTo: "body",
