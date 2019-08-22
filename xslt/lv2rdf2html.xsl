@@ -94,6 +94,7 @@
       <div class="info">
         <xsl:call-template name="license"/>
         <xsl:apply-templates select="key('descriptionsByPluginID', current())/foaf:name"/>
+	<xsl:apply-templates select="key('descriptionsByPluginID', current())/doap:maintainer"/>
       </div>
       <div class="ports">
         <p>Audio inputs:

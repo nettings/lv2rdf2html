@@ -111,4 +111,9 @@
   <p>Author: <xsl:value-of select="."/></p>
 </xsl:template>
 
+<xsl:template match="doap:maintainer">
+  <p>Maintainer: <a href="{@rdf:resource}"><xsl:value-of select="@rdf:resource"/></a></p>
+</xsl:template>
+
+
 </xsl:stylesheet>
