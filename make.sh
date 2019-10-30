@@ -6,6 +6,7 @@
 BUILDDIR=./build
 MODHOSTCONF=./mod-host.cmd
 MODHOSTHOST=localhost
+MODHOSTREALNAME=`hostname`
 MODHOSTPORT=5555
 SAMPLERATE=48000
 WEBGUIROOT=/var/www/html
@@ -151,6 +152,7 @@ function build {
     --stringparam jqueryuiintegrity "$JQUERYUIINTEGRITY" \
     --stringparam jqueryuicssuri "$JQUERYUICSSURI" \
     --stringparam jqueryuicssintegrity "$JQUERYUICSSINTEGRITY" \
+    --stringparam hostname "$MODHOSTREALNAME" \
     "$XSLDIR"/lv2rdf2html.xsl "$RDF" \
   | xsltproc "$XSLDIR"/xml-prettyprint.xsl - > "$BUILDDIR"/"$WEBGUIURI" && success || failure
 

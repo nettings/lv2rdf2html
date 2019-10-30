@@ -40,12 +40,13 @@
 <xsl:param name="jqueryintegrity"/>
 <xsl:param name="jqueryuiuri"/>
 <xsl:param name="jqueryuiintegrity"/>
-
+<xsl:param name="hostname"/>
 
 <xsl:template match="/*">
 <html> 
   <head>
     <meta charset="utf-8"/>
+    <title><xsl:value-of select="$hostname"/></title>
     <script
       src="{$jqueryuri}"
       integrity="{$jqueryintegrity}"
