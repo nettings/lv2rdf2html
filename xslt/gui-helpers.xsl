@@ -97,7 +97,7 @@
                 @rdf:resource, 'licenses/'
               ), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
             )
-          "/></a>
+          "/>&x200b;</a>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="@rdf:resource"/>
@@ -112,7 +112,7 @@
 </xsl:template>
 
 <xsl:template match="doap:maintainer">
-  <p>Maintainer: <a href="{@rdf:resource}"><xsl:value-of select="@rdf:resource"/></a></p>
+  <p>Maintainer: <a href="{@rdf:resource}"><xsl:value-of select="@rdf:resource"/>&#x200b;</a></p>
 </xsl:template>
 
 
