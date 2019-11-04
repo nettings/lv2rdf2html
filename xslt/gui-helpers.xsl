@@ -97,7 +97,7 @@
                 @rdf:resource, 'licenses/'
               ), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
             )
-          "/>&x200b;</a>
+          "/>&#x200b;</a>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="@rdf:resource"/>
