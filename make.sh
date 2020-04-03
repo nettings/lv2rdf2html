@@ -11,12 +11,12 @@ MODHOSTPORT=5555
 SAMPLERATE=48000
 WEBGUIROOT=/var/www/html
 WEBGUIURI=lv2rdf.html
-JQUERYURI=https://code.jquery.com/jquery-3.3.1.min.js
-JQUERYINTEGRITY=sha384-fJU6sGmyn07b+uD1nMk7/iSb4yvaowcueiQhfVgQuD98rfva8mcr1eSvjchfpMrH
+JQUERYURI=https://code.jquery.com/jquery-3.4.1.min.js
+JQUERYINTEGRITY=sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=
 JQUERYUIURI=https://code.jquery.com/ui/1.12.1/jquery-ui.min.js
 JQUERYUIINTEGRITY=sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=
 JQUERYUICSSURI=http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css
-JQUERYUICSSINTEGRITY=
+JQUERYUICSSINTEGRITY=sha384-xewr6kSkq3dBbEtB6Z/3oFZmknWn7nHqhLVLrYgzEFRbU/DHSxW7K3B44yWUN60D
 DOWNLOADJQUERY=true
 JSURI=lv2rdf.js
 CSSURI=lv2rdf.css
