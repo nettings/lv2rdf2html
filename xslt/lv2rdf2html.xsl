@@ -42,7 +42,7 @@
 <xsl:param name="jqueryuiintegrity"/>
 <xsl:param name="hostname"/>
 
-<xsl:template match="/*">
+<xsl:template match="/">
 <html> 
   <head>
     <meta charset="utf-8"/>
