@@ -20,10 +20,10 @@ JQUERYUICSSINTEGRITY=sha384-xewr6kSkq3dBbEtB6Z/3oFZmknWn7nHqhLVLrYgzEFRbU/DHSxW7
 DOWNLOADJQUERY=true
 JSURI=lv2rdf.js
 CSSURI=lv2rdf.css
-AJAXROOT=/var/www/html
+AJAXROOT=$WEBGUIROOT
 AJAXURI=lv2rdf.php
 XSLDIR=./xslt
-# DESTDIR=
+DESTDIR=
 
 . lv2rdf.conf
 
