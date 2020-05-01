@@ -1,7 +1,7 @@
 #!/bin/bash
 # generate a web interface from a mod-host command history file
 
-# This is the syntax and default setup for lv2rdf.conf
+# These are the default settings for lv2rdf.conf
 
 BUILDDIR=./build
 MODHOSTCONF=./mod-host.cmd
@@ -154,7 +154,8 @@ function build {
     --stringparam jqueryuicssintegrity "$JQUERYUICSSINTEGRITY" \
     --stringparam hostname "$MODHOSTREALNAME" \
     "$XSLDIR"/lv2rdf2html.xsl "$RDF" \
-  | xsltproc "$XSLDIR"/xml-prettyprint.xsl - > "$BUILDDIR"/"$WEBGUIURI" && success || failure
+  | xsltproc "$XSLDIR"/xml-prettyprint.xsl - \
+  | xsltproc "$XSLDIR"/add-html-doctype.xsl - > "$BUILDDIR"/"$WEBGUIURI" && success || failure
 
   echo -en "Generating server-side AJAX handler..."
   xsltproc \
