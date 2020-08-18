@@ -89,6 +89,7 @@
 <xsl:template name="handlePlugin">
   <section class="pluginGUI" id="plugin{.}">
     <h1>
+      <span class="plugin-id">#<xsl:value-of select="format-number(current(), '00')"/></span>
       <xsl:value-of select="key('descriptionsByPluginID', current())/doap:name"/>
     </h1>
     <div>

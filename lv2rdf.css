@@ -9,8 +9,15 @@ html {
 }
 section {
   min-width: 20em;
-  max-width: 40em;
+  max-width: 41em;
   height: auto;
+}
+section h1 span.plugin-id {
+  font-size: 80%;
+  border: 1px solid;
+  margin-right: 2em;
+  padding: 0.4ex;
+  border-radius: 0.5ex;
 }
 form, div.info, div.ports { 
   width: 100%;
@@ -27,7 +34,7 @@ div.info p, div.ports p {
 }
 div.ports p span {
   display: inline-block;
-  border: 1px solid black;
+  border: 1px solid;
   padding: 0 1ex;
   margin: 0 1ex;
 }
