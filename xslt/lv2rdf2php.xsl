@@ -99,11 +99,24 @@ foreach ($nodeIDs as $nodeID => $data) {
   $nodeIDs[$nodeID]['value'] = $res[$last];
 } 
 
-if (isset($_GET['dumpPersistenceCommands'])) {
+// honor dumpPersistenceCommands for now, but it's deprecated!
+if (isset($_GET['dumpPersistenceCommands']) || isset($_GET['dumpAllValues'])) {
   // System queries us for command list to restore current state.
   header('Content-Type: text/plain');
   foreach($nodeIDs as $nodeID) {
     echo "param_set ".$nodeID['instanceNo']." ".$nodeID['symbol']." ".$nodeID['value']."\n";
+  }
+  exit; // Terminate, we're done.
+}
+
+if (isset($_GET['dumpChangedValues'])) {
+  // System queries us for command list to restore current state.
+  header('Content-Type: text/plain');
+  foreach($nodeIDs as $nodeID) {
+    // only dump non-default values:
+    if ($nodeID['value'] != $nodeID['default']) {
+      echo "param_set ".$nodeID['instanceNo']." ".$nodeID['symbol']." ".$nodeID['value']."\n";
+    }
   }
   exit; // Terminate, we're done.
 }
@@ -148,7 +161,8 @@ $instance = </xsl:text><xsl:value-of select="."/><xsl:text>;
   $nodeIDs['<xsl:value-of select="current()"/>'] = array();
   $nodeIDs['<xsl:value-of select="current()"/>']['instanceNo'] = $instance;
   $nodeIDs['<xsl:value-of select="current()"/>']['symbol'] = "<xsl:value-of select="key('descriptionsByNodeID', current())/lv2:symbol"/>";
-  $nodeIDs['<xsl:value-of select="current()"/>']['value'] = "<xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>";
+  $nodeIDs['<xsl:value-of select="current()"/>']['default'] = "<xsl:value-of select="key('descriptionsByNodeID', current())/lv2:default"/>";
+  $nodeIDs['<xsl:value-of select="current()"/>']['value'] = $nodeIDs['<xsl:value-of select="current()"/>']['default']; 
 </xsl:template>
 
 </xsl:stylesheet>
