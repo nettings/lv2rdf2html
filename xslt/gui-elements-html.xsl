@@ -142,5 +142,10 @@
   </xsl:if>
 </xsl:template>
 
+<xsl:template name="symbol_tooltip">
+  <xsl:attribute name="title">
+    <xsl:value-of select="key('descriptionsByNodeID', current())/lv2:symbol"/>
+  </xsl:attribute>
+</xsl:template>
 
 </xsl:stylesheet>
